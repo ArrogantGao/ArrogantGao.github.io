@@ -79,7 +79,7 @@ Briefly, `Julia` is fast, and easy to use.
 
 ### User Friendly Tropical Interface: `TropicalNumbers.jl`
 
-For convenience, we want to use tropical number just like normal numbers willout lose of performance, so that we make use of the type system in `Julia`.
+For convenience, we want to use tropical number just like normal numbers without lose of performance, so that we make use of the type system in `Julia`.
 
 Type system of `Julia` allows us to create our own types, and `Julia` support multiple dispatch based on that.
 In Julia, the operators $+$ and $*$ could overloaded elegantly with [multiple dispatch](https://en.wikipedia.org/wiki/Multiple_dispatch), which is a feature not available in object oriented languages such as `Python` and `C++`.
@@ -273,7 +273,7 @@ For shared memory, its bandwidth is about $20000$GB/s while the latency is only 
 GEMM is a very memory-intensive operation, for example, when calculating the GEMM between a $M \times K$ matrix and a $K \times N$ matrix, if we use the naive way, i.e. evaluating the element in the result matrix one by one, for each element we will have to load $2K$ data, and there are $M \times N$ elements in total.
 Then we will have to load $2 \times M \times K \times N$ elements from the slow global memeory directly to registers in the whole process, and this generally far exceeds the data bandwidth of the GPU, resulting in serious performance issues.
 
-To avoid the heavy data loading, we first split the target matrix blocks with size $BM \times BN$, and each GPU block will be used to calculate one of the matrix blocks, as shown in the fig below: 
+To avoid the heavy data loading, we used the 'tiling' technique, which means we split the target matrix blocks into 'tiles' with size of $BM \times BN$, and each GPU block will be used to calculate one of the matrix blocks, as shown in the fig below: 
 
 ![Fig.1](/assets/CuTropicalGEMM_figs/block.png)
 
