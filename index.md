@@ -9,7 +9,7 @@ This is my personal website, hope you enjoy!
 
 # Blogs
 
-1. [How to implement generic matrix multiplication (GEMM) with generic element types on GPU?](/_blogs/CuTropicalGEMM/)
+1. [How to implement generic matrix multiplication (GEMM) with generic element types on GPU?](/CuTropicalGEMM/)
 
     This blog is a technical note for the [Open Source Promotion Plan 2023](https://summer-ospp.ac.cn/) project ["TropicalGEMM on GPU"](https://summer-ospp.ac.cn/org/prodetail/23fec0105?lang=en&list=pro) released by JuliaCN, where I developed a [Julia](https://julialang.org/) package [CuTropicalGemm.jl](https://github.com/TensorBFS/CuTropicalGEMM.jl) calculate Generic Matrix Multiplication (GEMM) of Tropical Numbers on Nvidia GPUs.
 
