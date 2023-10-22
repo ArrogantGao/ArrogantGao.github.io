@@ -306,16 +306,6 @@ For the boundary elements, a padding strategy is used, we simply set the element
 
 Further benchmarking is still in development, and will be uoloaded to this repo [CuTropicalGEMM_benchmark](https://github.com/ArrogantGao/CuTropicalGEMM_benchmark).
 
-### Optimization of Narrow Matrix Performance
-
-The second aspect is to further optimize the code, especially the performance on narrow matrices.
-As mentioned above, our package now is using the padding strategy to handle the boundary elements, and the minimum matrix size we process in each block on the GPU are $64 \times 32 \times 64$, which is optimal for large square matrices.
-However, the performance of the code on narrow matrices is not good enough, and the reason is that the padding strategy will enlarge the matrix size a lot.
-For example, when handling a matrix multiplication with size $4 \times 4 \times 10^6$, what is actually calculated is $64 \times 32 \times 10^6$, which means that the code will waste a lot of time on the padding elements.
-Unfortunately, such narrow matrices are very common in the tensor network contraction process, and the performance of the code on narrow matrices is very important.
-
-Now we are considering further optimize the code for narrow matrices, related code are stored in the branch [narrow matrices](https://github.com/TensorBFS/CuTropicalGEMM.jl/tree/narrow_matrices).
-
 ## Open Source Promotion Plan
 
 As mentioned above, this program is support by [Open Source Promotion Plan 2023](https://summer-ospp.ac.cn/), JuliaCN.
