@@ -1,3 +1,3 @@
 # ArrogantGao.github.io
 
-WebSite: [arrogantgao.github.io](arrogantgao.github.io)
+[WebSite](https://arrogantgao.github.io)
