@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rss version="2.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:media="http://search.yahoo.com/mrss/"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:georss="http://www.georss.org/georss">
+
+  <channel>
+    <title>
+      <![CDATA[  Xuanzhao Gao&#39;s Site  ]]>
+    </title>
+    <link> https://arrogantgao.github.io/ </link>
+    <description>
+      <![CDATA[  Xuanzhao Gao&#39;s personal website using Franklin  ]]>
+    </description>
+    <atom:link
+      href="https://arrogantgao.github.io/feed.xml"
+      rel="self"
+      type="application/rss+xml" />
+
+
+<item>
+  <title>
+    <![CDATA[  CuTropicalGEMM.jl  ]]>
+  </title>
+  <link> https://arrogantgao.github.io/_blogs/CuTropicalGEMM/index.html </link>
+  <guid> https://arrogantgao.github.io/_blogs/CuTropicalGEMM/index.html </guid>
+  <description>
+    <![CDATA[  An introduction to a new package <code>CuTropicalGEMM.jl</code>, which is used to speed up generic matrix multiplication of Tropical Numbers using GPU.  ]]>
+  </description>  
+    
+  <pubDate>Sun, 22 Oct 2023 00:00:00 +0000</pubDate>  
+  
+  
+  <atom:author>
+    <atom:name>Xuanzhao Gao</atom:name>
+  </atom:author>
+        
+</item>
+</channel></rss>

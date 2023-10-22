@@ -1,0 +1,4 @@
+Sitemap: https://arrogantgao.github.io/sitemap.xml
+
+User-agent: *
+Disallow:
