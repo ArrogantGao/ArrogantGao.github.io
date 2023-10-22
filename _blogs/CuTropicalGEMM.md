@@ -9,7 +9,7 @@ tags = ["syntax", "code"]
 
 # How to implement generic matrix multiplication (GEMM) with generic element types on GPU?
 
-This blog is a technical note for the [Open Source Promotion Plan 2023](https://summer-ospp.ac.cn/) project ["TropicalGEMM on GPU"](https://summer-ospp.ac.cn/org/prodetail/23fec0105?lang=en&list=pro) released by JuliaCN, where I developed a [Julia](https://julialang.org/) package [CuTropicalGemm.jl](github.com/TensorBFS/CuTropicalGEMM.jl) calculate Generic Matrix Multiplication (GEMM) of Tropical Numbers on Nvidia GPUs.
+This blog is a technical note for the [Open Source Promotion Plan 2023](https://summer-ospp.ac.cn/) project ["TropicalGEMM on GPU"](https://summer-ospp.ac.cn/org/prodetail/23fec0105?lang=en&list=pro) released by JuliaCN, where I developed a [Julia](https://julialang.org/) package [CuTropicalGemm.jl](https://github.com/TensorBFS/CuTropicalGEMM.jl) calculate Generic Matrix Multiplication (GEMM) of Tropical Numbers on Nvidia GPUs.
 
 This blog covers the following contents:
 
@@ -57,8 +57,8 @@ For these purposes, a fast implementation of the TropicalGEMM on GPU is on deman
 ## Matrix Multiplication of Tropical Numbers on GPU
 
 We achieved fast TropicalGEMM via two packages in `Julia`.
-* [`TropicalNumbers.jl`](github.com/TensorBFS/TropicalNumbers.jl): an interface for Tropical Numbers, which will allow users to use tropical numbers just like normal numbers.
-* [`CuTropicalGEMM.jl`](github.com/TensorBFS/CuTropicalGEMM.jl): a fast implementation of the TropicalGEMM on GPU, fast and easy to use.
+* [`TropicalNumbers.jl`](https://github.com/TensorBFS/TropicalNumbers.jl): an interface for Tropical Numbers, which will allow users to use tropical numbers just like normal numbers.
+* [`CuTropicalGEMM.jl`](https://github.com/TensorBFS/CuTropicalGEMM.jl): a fast implementation of the TropicalGEMM on GPU, fast and easy to use.
 
 In the following part of this section, we will mainly introduce these two packages.
 Including how to use them and how we developed them.
@@ -85,7 +85,7 @@ Type system of `Julia` allows us to create our own types, and `Julia` support mu
 In Julia, the operators $+$ and $*$ could overloaded elegantly with [multiple dispatch](https://en.wikipedia.org/wiki/Multiple_dispatch), which is a feature not available in object oriented languages such as `Python` and `C++`.
 
 Base on that, we simply define the Tropical number as a new number type, and overload the correspond operations.
-That is what we do in package [TropicalNumbers.jl](github.com/TensorBFS/TropicalNumbers.jl).
+That is what we do in package [TropicalNumbers.jl](https://github.com/TensorBFS/TropicalNumbers.jl).
 ```julia
 abstract type AbstractSemiring <: Number end
 
