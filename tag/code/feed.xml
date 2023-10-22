@@ -25,8 +25,8 @@
   <title>
     <![CDATA[  CuTropicalGEMM.jl  ]]>
   </title>
-  <link> https://arrogantgao.github.io/CuTropicalGEMM/index.html </link>
-  <guid> https://arrogantgao.github.io/CuTropicalGEMM/index.html </guid>
+  <link> https://arrogantgao.github.io/_blogs/CuTropicalGEMM/index.html </link>
+  <guid> https://arrogantgao.github.io/_blogs/CuTropicalGEMM/index.html </guid>
   <description>
     <![CDATA[  An introduction to a new package <code>CuTropicalGEMM.jl</code>, which is used to speed up generic matrix multiplication of Tropical Numbers using GPU.  ]]>
   </description>  
