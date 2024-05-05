@@ -20,7 +20,11 @@ This is my personal website, hope you enjoy!
 * [ExTinyMD.jl](https://github.com/ArrogantGao/ExTinyMD.jl)
   * A simple but fast molecular dynamic framework in Julia.
 
+* [ChebParticleMesh.jl](https://github.com/HPMolSim/ChebParticleMesh.jl)
+  * A package using Chebyshev polynomials to interpolate/gather particles onto mesh grids.
+
 # Publications
 
+* **Zecheng Gan, Xuanzhao Gao, Jiuyang Liang, Zhenli Xu**, [Fast Algorithm for Quasi-2D Coulomb Systems](https://arxiv.org/abs/2403.01521), 2024
 * **Xuanzhao Gao**, **Zecheng Gan**, [Broken Symmetries in Quasi-2D Charged Systems via Dielectric Confinement](https://arxiv.org/pdf/2207.04687), 2022
 * **Zhonghui Nie**, **Xuanzhao Gao**, **Yinjuan Ren**, **Siyang Xia**, **Yuhan Wang**, **Yongliang Shi**, **Jin Zhao** and **Yue Wang**, [Harnessing hot phonon bottleneck in metal halide perovskite nanocrystals via interfacial electron–phonon coupling](https://pubs.acs.org/doi/full/10.1021/acs.nanolett.0c01452), 2020
