@@ -19,12 +19,15 @@ This is my personal website, hope you enjoy!
   * A Julia package to speed up the generic matrix multiplication of Tropical Numbers using GPU.
 * [ExTinyMD.jl](https://github.com/ArrogantGao/ExTinyMD.jl)
   * A simple but fast molecular dynamic framework in Julia.
-
 * [ChebParticleMesh.jl](https://github.com/HPMolSim/ChebParticleMesh.jl)
-  * A package using Chebyshev polynomials to interpolate/gather particles onto mesh grids.
-
+  * A Julia package to calculate the electrostatic potential of charged systems using Chebyshev interpolation (very similar to NUFFT).
+  
 # Publications
 
-* **Zecheng Gan, Xuanzhao Gao, Jiuyang Liang, Zhenli Xu**, [Fast Algorithm for Quasi-2D Coulomb Systems](https://arxiv.org/abs/2403.01521), 2024
-* **Xuanzhao Gao**, **Zecheng Gan**, [Broken Symmetries in Quasi-2D Charged Systems via Dielectric Confinement](https://arxiv.org/pdf/2207.04687), 2022
-* **Zhonghui Nie**, **Xuanzhao Gao**, **Yinjuan Ren**, **Siyang Xia**, **Yuhan Wang**, **Yongliang Shi**, **Jin Zhao** and **Yue Wang**, [Harnessing hot phonon bottleneck in metal halide perovskite nanocrystals via interfacial electron–phonon coupling](https://pubs.acs.org/doi/full/10.1021/acs.nanolett.0c01452), 2020
+* Gao, Xuanzhao, and Zecheng Gan. “Broken Symmetries in Quasi-2D Charged Systems via Negative Dielectric Confinement.” The Journal of Chemical Physics 161, no. 1 (July 7, 2024): 011102. https://doi.org/10.1063/5.0214523.
+
+* Gan, Zecheng, Xuanzhao Gao, Jiuyang Liang, and Zhenli Xu. “Fast Algorithm for Quasi-2D Coulomb Systems.” arXiv, March 3, 2024. http://arxiv.org/abs/2403.01521.
+
+* Roa-Villescas, Martin, Xuanzhao Gao, Sander Stuijk, Henk Corporaal, and Jin-Guo Liu. “Probabilistic Inference in the Era of Tensor Networks and Differential Programming.” arXiv, May 22, 2024. http://arxiv.org/abs/2405.14060.
+
+* Gan, Zecheng, Xuanzhao Gao, Jiuyang Liang, and Zhenli Xu. “Random Batch Ewald Method for Dielectrically Confined Coulomb Systems.” arXiv, May 10, 2024. http://arxiv.org/abs/2405.06333.
