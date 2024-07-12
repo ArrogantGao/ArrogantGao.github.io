@@ -7,6 +7,12 @@ I am Xuanzhao Gao, a PhD student in Hongkong University of Science and Technolog
 
 This is my personal website, hope you enjoy!
 
+# About Me
+
+I am a PhD student at Hongkong University of Science and Technology (Guangzhou). My research interests include computational physics, application mathematics, and high-performance computing. I am currently working on the development of fast algorithms for kernel summation problems and tensor network contraction problems.
+
+My Google Scholar profile can be found [here](https://scholar.google.fr/citations?user=ScbYSkgAAAAJ&hl=fr), and my github can be found [here](https://github.com/ArrogantGao).
+
 # Blogs
 
 1. [How to implement generic matrix multiplication (GEMM) with generic element types on GPU?](/CuTropicalGEMM/)
@@ -17,7 +23,7 @@ This is my personal website, hope you enjoy!
 
 * [CuTropicalGEMM.jl](https://github.com/TensorBFS/CuTropicalGEMM.jl)
   * A Julia package to speed up the generic matrix multiplication of Tropical Numbers using GPU.
-* [ExTinyMD.jl](https://github.com/ArrogantGao/ExTinyMD.jl)
+* [ExTinyMD.jl](https://github.com/HPMolSim/ExTinyMD.jl)
   * A simple but fast molecular dynamic framework in Julia.
 * [ChebParticleMesh.jl](https://github.com/HPMolSim/ChebParticleMesh.jl)
   * A Julia package to calculate the electrostatic potential of charged systems using Chebyshev interpolation (very similar to NUFFT).
