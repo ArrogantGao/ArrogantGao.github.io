@@ -117,13 +117,74 @@ Thus the BT algorithm contains two phases, it first search for all pmcs, and the
 
 ### Minimum Separator and Potential Maximal Cliques
 
-To introduce the algorithm, we first need to introduce the concept of **potential maximal cliques** and  **minimum separator**[^BouchittéListing], which are possible tree bags and the intersection of two bags, respectively.
+To introduce the algorithm, we first need to introduce the concept of **minimum separator**[^Berry] and **potential maximal cliques**[^BouchittéListing], which are the intersection of two bags and possible tree bags, respectively.
 
-**Definition 2**. A subset $S \subseteq V$ is an $a, b$-separator for two nonadjacent vertices $a, b \in V$ if the removal of $S$ from the graph separates $a$ and $b$ in different connected components. $S$ is a minimal $a; b$-separator if no proper subset of $S$ separates $a$ and $b$.
+**Definition 2**. A subset $S \subseteq V$ is an $a, b$-separator for two nonadjacent vertices $a, b \in V$ if the removal of $S$ from the graph separates $a$ and $b$ in different connected components. $S$ is a minimal $a, b$-separator if no proper subset of $S$ separates $a$ and $b$.
+
+For all pairs of nonadjacent vertices $a, b \in V$, the set of all minimal $a, b$-separators are called the minimal separators of the graph, represented by $\Delta(G)$.
+In practice, we can examine a set of vertices $S$ by check the connected components of the graph after removing $S$, $\mathcal{C}(G / S)$. 
+* If there are two or more connected components whose neighbor is exactly the set $S$, then $S$ is a separator, and the components are called full components.
+
+**Definition 3**. A vertex set $\Omega$ of a graph $G$ is called a potential maximal clique if there is a minimal triangulation $H$ of $G$ such that $\Omega$ is a maximal clique of $H$.
+
+Minimal triangulation is a graph obtained by adding edges to the graph such that the resulting graph is chordal.
+The set of all possible pmcs of a graph is represented by $\Pi(G)$.
+In practice, we can use the following conditions to check whether a set of vertices $\Omega$ is a pmc:
+* $\Omega$ has no full component.
+* For any pair of distinct vertices $u, v \in Ω$, either $(u, v) \in E(G)$ or there is a component $C \in \mathcal{C}(G / \Omega)$ with $(u, v) \in N(C)$.
+
+In the first phase, the BT algorithm first search for $\Delta(G)$, and the using $\Delta(G)$ to search for $\Pi(G)$.
+
+#### Enumerating Minimal Separators
+
+We first introduce the method introduced by Berry[^Berry] to enumerate all minimal separators of a graph.
+Briefly, the algorithm makes use of the fact that given a separator, neighbors of its components are minimal separators.
+Then the algorithm starts from the simplest minimal separator, i.e., neighbors of a single vertex, and then iteratively add vertices to the separator to find all minimal separators.
+The algorithm is shown below:
+
+![alt text](/assets/treewidth_figs/min_seps.png)
 
 
+#### Enumerating Potential Maximal Cliques
+
+Then we introduce the method to enumerate all pmcs of a graph[^BouchittéListing], where the set of pmcs is constructed iteratively.
+
+The algorithm first constructs a set of induced subgraphs $G_1, G_2, ..., G_N$, starting from only one vertex and then iteratively add vertices to the subgraphs.
+For the $i$-th subgraph $G_i$, the algorithm first find all minimal separators $\Delta_i$ of the graph, and then use $\Delta_i$ and $\Pi_{i - 1}$ to find $\Pi_i$, where $\Pi_{i - 1}$ is the set of pmcs of the previous subgraph, since all pmcs of $G_i$ satisfies one of these conditions:
+* $\Omega = \Omega' \cup \{v_i\}$, $\Omega' \in \Pi_{i - 1}$, $v_i = V(G_i) \setminus V(G_{i - 1})$
+* $\Omega = \Omega'$, $\Omega' \in \Pi_{i - 1}$
+* $\Omega = S \cup \{a\}$, $S \in \Delta_i$
+* $\Omega = S_1 \cup (C \cap S_2)$, $S_* \in \Delta_i$, $C \in \mathcal{C}(G_i \setminus S)$
+
+The algorithm is shown below:
+![alt text](/assets/treewidth_figs/pmcs.png)
+
+![alt text](/assets/treewidth_figs/one_more_vertex.png)
 
 ### Constructing the Tree Decomposition
+
+In the second phase, with all pmcs, the algorithm constructs the tree decomposition with minimal width.
+First, we use the pmcs to construct all possible $(\Omega, S, C)$ in $G$, where $S \subsetneq \Omega \subseteq (S \cup C)$.
+For example, $(\Omega_1, S_1, C_1)$ in the following graph is a possible triple.
+Then we can sort all these triples according to the size of $S \cup C$, and the largest ones are simply $(\Omega, \emptyset, G)$.
+
+![alt text](/assets/treewidth_figs/SC_pairs.png)
+
+It has been proved that the following property holds: for each pairs of $(S, C)$, its width is given by the size of $\Omega$ minus one or the largest width of all pair of $(S', C')$ as its subset.
+For example, width of $(S_1, C_1)$ written as $w(S_1, C_1)$ is given by
+$$w(S_1, C_1) = \max(|\Omega_1| - 1, w(S_2, C_2))$$
+while
+$$w(S_2, C_2) = \max(|\Omega_2| - 1, w(S_3, C_3), w(S_4, C_4)).$$
+If the pair $(S, C)$ has no subset, then its width is given by the size of $\Omega$ minus one, corresponding to the leaf of the tree decomposition.
+In the end, $tw(G) = w(\emptyset, G)$.
+
+This leads to a dynamic programming algorithm to find minimal width, where we can calculate the width of the leaves first, and then we will be able to iteratively calculate the width of the larger pairs.
+The algorithm is shown below:
+
+![alt text](/assets/treewidth_figs/btdp.png)
+
+The algorithm gives both minimal width and also the corresponding tree decomposition, which can be used to find the optimal contraction order of the tensor network.
+For details about the implementation of the BT algorithm, please refer to the [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl) package.
 
 
 ## Appendix A: Tensor Network with Open Edges
@@ -136,4 +197,5 @@ In this section, we will introduce how to handle the tensor networks which are n
 [^linegraph]: [https://en.wikipedia.org/wiki/Line_graph](https://en.wikipedia.org/wiki/Line_graph)
 [^treedecomp]: [https://en.wikipedia.org/wiki/Tree_decomposition](https://en.wikipedia.org/wiki/Tree_decomposition)
 [^Bouchitté]: Bouchitté, Vincent, and Ioan Todinca. “Treewidth and Minimum Fill-in: Grouping the Minimal Separators.” SIAM Journal on Computing 31, no. 1 (January 2001): 212–32. https://doi.org/10.1137/S0097539799359683.
-[^BouchittéListing]: Bouchitté, Vincent, and Ioan Todinca. "Listing All Potential Maximal Cliques of a Graph." Theoretical Computer Science, 2002.
+[^Berry]: Berry, Anne, Jean-Paul Bordat, and Olivier Cogis. “Generating All the Minimal Separators of a Graph.” In Graph-Theoretic Concepts in Computer Science, edited by Peter Widmayer, Gabriele Neyer, and Stephan Eidenbenz, 1665:167–72. Lecture Notes in Computer Science. Berlin, Heidelberg: Springer Berlin Heidelberg, 1999. https://doi.org/10.1007/3-540-46784-X_17.
+[^BouchittéListing]: Bouchitté, Vincent, and Ioan Todinca. “Listing All Potential Maximal Cliques of a Graph.” Theoretical Computer Science, 2002.
