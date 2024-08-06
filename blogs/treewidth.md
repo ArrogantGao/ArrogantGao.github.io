@@ -117,7 +117,11 @@ Thus the BT algorithm contains two phases, it first search for all pmcs, and the
 
 ### Minimum Separator and Potential Maximal Cliques
 
-To introduce the algorithm, we first need to introduce the concept of **potential maximal cliques** and  **minimum separator**, which are possible tree bags and the intersection of two bags.
+To introduce the algorithm, we first need to introduce the concept of **potential maximal cliques** and  **minimum separator**[^BouchittéListing], which are possible tree bags and the intersection of two bags, respectively.
+
+**Definition 2**. A subset $S \subseteq V$ is an $a, b$-separator for two nonadjacent vertices $a, b \in V$ if the removal of $S$ from the graph separates $a$ and $b$ in different connected components. $S$ is a minimal $a; b$-separator if no proper subset of $S$ separates $a$ and $b$.
+
+
 
 ### Constructing the Tree Decomposition
 
@@ -132,3 +136,4 @@ In this section, we will introduce how to handle the tensor networks which are n
 [^linegraph]: [https://en.wikipedia.org/wiki/Line_graph](https://en.wikipedia.org/wiki/Line_graph)
 [^treedecomp]: [https://en.wikipedia.org/wiki/Tree_decomposition](https://en.wikipedia.org/wiki/Tree_decomposition)
 [^Bouchitté]: Bouchitté, Vincent, and Ioan Todinca. “Treewidth and Minimum Fill-in: Grouping the Minimal Separators.” SIAM Journal on Computing 31, no. 1 (January 2001): 212–32. https://doi.org/10.1137/S0097539799359683.
+[^BouchittéListing]: Bouchitté, Vincent, and Ioan Todinca. "Listing All Potential Maximal Cliques of a Graph." Theoretical Computer Science, 2002.
