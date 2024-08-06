@@ -3,8 +3,7 @@
 
 # Greetings!
 
-I am Xuanzhao Gao, a PhD student in Hongkong University of Science and Technology (Guangzhou).
-
+I am Xuanzhao Gao, a PhD student in Hongkong University of Science and Technology.
 This is my personal website, hope you enjoy!
 
 # About Me
@@ -15,9 +14,13 @@ My Google Scholar profile can be found [here](https://scholar.google.fr/citation
 
 # Blogs
 
-1. [How to implement generic matrix multiplication (GEMM) with generic element types on GPU?](/CuTropicalGEMM/)
+1. [How to implement generic matrix multiplication (GEMM) with generic element types on GPU?](/blogs/CuTropicalGEMM/)
 
     This blog is a technical note for the [Open Source Promotion Plan 2023](https://summer-ospp.ac.cn/) project ["TropicalGEMM on GPU"](https://summer-ospp.ac.cn/org/prodetail/23fec0105?lang=en&list=pro) released by JuliaCN, where I developed a [Julia](https://julialang.org/) package [CuTropicalGemm.jl](https://github.com/TensorBFS/CuTropicalGEMM.jl) calculate Generic Matrix Multiplication (GEMM) of Tropical Numbers on Nvidia GPUs.
+
+2. [Tensor Network Contraction Order Optimization with Exact Tree Width Solver](/blogs/treewidth/)
+
+    This blog is a technical note for the [Google Summer of Code 2024](https://summerofcode.withgoogle.com) project ["Tensor network contraction order optimization and visualization"](https://summerofcode.withgoogle.com/programs/2024/projects/B8qSy9dO) released by **The Julia Language**, where I developed a [Julia](https://julialang.org/) package [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl) to calculate the tree decomposition with minimal treewidth of a given simple graph and made it a backend of [OMEinsumContracionOrders.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl).
 
 # Open Source Packages
 
@@ -27,13 +30,15 @@ My Google Scholar profile can be found [here](https://scholar.google.fr/citation
   * A simple but fast molecular dynamic framework in Julia.
 * [ChebParticleMesh.jl](https://github.com/HPMolSim/ChebParticleMesh.jl)
   * A Julia package to calculate the electrostatic potential of charged systems using Chebyshev interpolation (very similar to NUFFT).
+* [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl)
+  * A Julia package to solve tree decomposition with minimal treewidth of a given simple graph.
   
 # Publications
 
-* Gao, Xuanzhao, and Zecheng Gan. “Broken Symmetries in Quasi-2D Charged Systems via Negative Dielectric Confinement.” The Journal of Chemical Physics 161, no. 1 (July 7, 2024): 011102. https://doi.org/10.1063/5.0214523.
+* **Gao, Xuanzhao**, and Zecheng Gan. [Broken Symmetries in Quasi-2D Charged Systems via Negative Dielectric Confinement](https://doi.org/10.1063/5.0214523). The Journal of Chemical Physics 161, no. 1 (July 7, 2024): 011102.
 
-* Gan, Zecheng, Xuanzhao Gao, Jiuyang Liang, and Zhenli Xu. “Fast Algorithm for Quasi-2D Coulomb Systems.” arXiv, March 3, 2024. http://arxiv.org/abs/2403.01521.
+* Gan, Zecheng, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Fast Algorithm for Quasi-2D Coulomb Systems](http://arxiv.org/abs/2403.01521). arXiv, March 3, 2024.
 
-* Roa-Villescas, Martin, Xuanzhao Gao, Sander Stuijk, Henk Corporaal, and Jin-Guo Liu. “Probabilistic Inference in the Era of Tensor Networks and Differential Programming.” arXiv, May 22, 2024. http://arxiv.org/abs/2405.14060.
+* Roa-Villescas, Martin, **Xuanzhao Gao**, Sander Stuijk, Henk Corporaal, and Jin-Guo Liu. [Probabilistic Inference in the Era of Tensor Networks and Differential Programming](http://arxiv.org/abs/2405.14060). arXiv, May 22, 2024.
 
-* Gan, Zecheng, Xuanzhao Gao, Jiuyang Liang, and Zhenli Xu. “Random Batch Ewald Method for Dielectrically Confined Coulomb Systems.” arXiv, May 10, 2024. http://arxiv.org/abs/2405.06333.
+* Gan, Zecheng, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Random Batch Ewald Method for Dielectrically Confined Coulomb Systems](http://arxiv.org/abs/2405.06333). arXiv, May 10, 2024.
