@@ -12,17 +12,76 @@ tags = ["syntax", "code"]
 This blog is a technical note for the [Google Summer of Code 2024](https://summerofcode.withgoogle.com) project ["Tensor network contraction order optimization and visualization"](https://summerofcode.withgoogle.com/programs/2024/projects/B8qSy9dO) released by **The Julia Language**, where I developed a package [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl) for calculating the tree decomposition with minimal treewidth of a given simple graph and made it a backend of [OMEinsumContracionOrders.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl).
 
 This blog covers the following contents:
-1. What is tensor network contraction order and why it is important?
-2. What is tree width and tree decomposition?
-3. What is the relationship between tree decomposition and contraction order?
-4. How to find the optimal tree decomposition?
+1. Contraction order of tensor network
+2. Tree decomposition and its relation to contraction order
+3. Finding tree decomposition with minimal treewidth
 
 ## Tensor Network Contraction Order
 
-In this blog, we will not introduce the basic concept of tensor network.
+In this blog, we will not introduce the basic concept of tensor network, since it has been well introduced in many other places.
 Instead, we recommend the following references:
-* For readers with physics background: [https://tensornetwork.org](https://tensornetwork.org)
+* For readers with physics background: [https://tensornetwork.org/diagrams/](https://tensornetwork.org/diagrams/)
 * For readers want to get a formal definition: Chapter 2 of [https://epubs.siam.org/doi/abs/10.1137/22M1501787](https://epubs.siam.org/doi/abs/10.1137/22M1501787)
+
+For simplicity, in the following sections, we will use the Einstein summation formula to represent the tensor network as high dimensional arrays' multiplication:
+$$R_{i,j,k,...} = \sum_{a, b, c, ...} A_{a,...}B_{b,...}...$$
+It is easy to see that the most direct way to calculate the result is to loop over all the indices naively, which requires $O(d^N)$ operations, where $d$ is the dimension of the index and $N$ is the number of indices.
+However, such a direct calculation is not efficient.
+Considering the following simple tensor network:
+
+![](/assets/treewidth_figs/D10.png)
+
+where the tensors are represented by the circles and the indices are represented by the lines, $A, B, C, D$ are all rank-4 tensors, all indices are of dimension $D$.
+Naively loop over all the indices requires $O(D^{12})$ operations and producing no intermediate tensors.
+On the other hand, consider the following contraction order:
+
+
+![](/assets/treewidth_figs/ABCD_contraction.png)
+
+where we first contract $A$ and $B$ to get $AB$, then contract $C$ and $D$ to get $CD$, and finally contract $AB$ and $CD$ to get the result.
+In this way, the total number of operations is $O(D^{10})$, which is much smaller than the naive calculation, while the trade-off is that we need to store the intermediate tensors $AB$ and $CD$ with size of $O(D^{8})$.
+We say such a contraction is with **time complexity** of $O(D^{10})$ and **space complexity** of $O(D^{8})$, which represents the number of operations and the largest size of the intermediate tensors, respectively.
+
+In actual calculation, we prefer such binary contractions, i.e., contracting two tensors at a time, and then contract the result with another tensor, and so on, so that we can make use of BLAS libraries to speed up the calculation.
+A given contraction order can be represented as a tree, and since we only apply binary contractions, the tree is a binary tree. 
+The contraction tree can be represented as a rooted tree, where the leaves are the tensors to be contracted and the internal nodes are the intermediate tensors.
+
+### Tools for Tensor Network Contraction Order Optimization
+
+In practice, there are many tools for tensor network contraction order optimization, including:
+* [OMEinsumContractionOrder.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl): a open-source Julia package for finding the optimal contraction order of tensor networks.
+* [Cotengra](https://cotengra.readthedocs.io/en/latest/)[^Gray] : a python library for contracting tensor networks or einsum expressions involving large numbers of tensors.
+
+Various methods have been proposed for optimizing the contraction order, including:
+
+#### Greedy Algorithm
+
+The Greedy method is one of the simplest and fastest method for optimizing the contraction order. The idea is to greedily select the pair of tensors with the smallest cost to contract at each step. In each step, for all possible pairs of tensors, the cost of the contraction is evaluated, and the pair with the smallest cost is selected and then contracted, which forms a new tensor.  This process is repeated until all tensors are contracted. This method is fast, however it is easy to be trapped in local minima.
+
+An enhanced method is called the hyper-greedy method, where in each step one does not directly select the pair with the smallest cost, but instead samples according to the Boltzmann distribution given by $\mathcal{P}(v_i, v_j) = e^{-{L(v_i, v_j)} / {T}}$, where $L(v_i, v_j)$ is the cost function. In this case, it is possible for the process to escape from local minima. Then we run this process multiple times and select the best result.
+The method has already been used in both OMEinsumContractionOrders.jl and Cotengra. 
+
+#### Binary Partition
+
+A given tensor network can be regarded as a hypergraph, where the tensors are the vertices and the shared indices are the hyperedges, where the cost of contracting a hyper edge can be encoded as its weight. The binary partition method is to partition the hypergraph into two parts, and then recursively partition each part. Cost of each partition can be evaluated by the sum of the weights of the hyperedges cut by the partition, while we prefer to make the partition as balanced as possible (balance means size of the subgraph should be similar). Thus, the problem is reduced to a balanced min cut problem on a hypergraph. In the past few decades, the graph community has developed many algorithms for the balanced min cut problem and provided the corresponding software packages, such as [KaHyPar](https://kahypar.org) [^kahypar], which has already been used in both OMEinsumContractionOrders.jl and Cotengra. 
+
+#### Tree Simulated Annealing
+
+Tree simulating annealing (TreeSA) [^Kalachev] is another type of the optimization method based on local search and simulating annealing. TreeSA is based on the following rules:
+
+* Associativity: $T \times (S \times R) = (T \times S) \times R$,
+* Commutativity: $T \times S = S \times T$.
+
+These rules lead to the four possible transforms of the contraction tree as shown in the following figure.
+
+![](/assets/treewidth_figs/treesa.png)
+
+The TreeSA method starts from a random contraction tree and then applies the above rules to transform the tree. The cost of the contraction tree is evaluated and the tree is updated according to the Metropolis criterion. During the process, the temperature is gradually decreased, and the process stop when the temperature is low enough.
+The method has already been used in OMEinsumContractionOrders.jl.
+
+
+The method listed above are powerful and efficient, which can be used to find great contraction orders of the extremely large tensor networks.
+However, they are heuristic methods and may not guarantee to find the optimal contraction order. In the following sections, we will introduce a theoretical method to find the optimal contraction order based on the tree decomposition.
 
 
 ## Finding the Optimal Contraction Order
@@ -37,7 +96,7 @@ To further make use of the theorem, we need to introduce the concepts of line gr
 
 ### Line Graph
 
-A formal definition of the **line graph**[^linegraph] is as follows:
+A formal definition of the [**line graph**](https://en.wikipedia.org/wiki/Line_graph) is as follows:
 
 **Definition 1**. Given a graph G, its line graph $L(G)$ is a graph such that: 
    1. each vertex of $L(G)$ represents an edge of $G$; 
@@ -57,7 +116,7 @@ where $w(*)$ for weights of vertices.
 
 ### Tree Decomposition and Tree Width
 
-Intuitively, a **tree decomposition** represents the vertices of a given graph $G$ as subtrees of a tree, in such a way that vertices in $G$ are adjacent only when the corresponding subtrees intersect[^treedecomp].
+Intuitively, a [**tree decomposition**](https://en.wikipedia.org/wiki/Tree_decomposition) represents the vertices of a given graph $G$ as subtrees of a tree, in such a way that vertices in $G$ are adjacent only when the corresponding subtrees intersect.
 
 The tree decomposition of a graph is a tree whose nodes are subsets of the vertices of the graph, and the following conditions are satisfied:
 
@@ -179,7 +238,7 @@ If the pair $(S, C)$ has no subset, then its width is given by the size of $\Ome
 In the end, $tw(G) = w(\emptyset, G)$.
 
 This leads to a dynamic programming algorithm to find minimal width, where we can calculate the width of the leaves first, and then we will be able to iteratively calculate the width of the larger pairs.
-The algorithm is shown below:
+The algorithm[^Tuukka] is shown below, we used the version rewritten by Tuukka Korhonen, which is clearer and more readable.
 
 ![alt text](/assets/treewidth_figs/btdp.png)
 
@@ -187,15 +246,84 @@ The algorithm gives both minimal width and also the corresponding tree decomposi
 For details about the implementation of the BT algorithm, please refer to the [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl) package.
 
 
-## Appendix A: Tensor Network with Open Edges
+### Tensor Network with Open Edges
 
-In this section, we will introduce how to handle the tensor networks which are not closed, i.e., there are open edges in these tensor networks, which is common in practice.
+In the previous sections, we introduced how to construct an optimal contraction order for a closed tensor network by finding the optimal tree decomposition of its line graph, where all indices are contracted.
+However, in practice, we often encounter tensor networks with open edges, where some indices are not contracted.
+In this case, method based on bi-partition or tree decomposition may not be directly applied, since the complexity contributed by the open edges will not be reduced by any contraction, and neither balance min cut nor tree decomposition can correctly handle that.
+
+To solve this problem, we develop a method by add a dummy tensor to the tensor network, where the dummy tensor has the same dimension as the open indices, and the dummy tensor is connected to all the tensors with open indices.
+Then we can obtain the contraction order of the new network, which can be easy since now there is no open edges.
+Finally, the contraction tree is rotated without changing the contraction complexity, which makes the dummy tensor the last tensor to be contracted so that can be removed, and the contraction order of the original tensor network is obtained.
+
+For example, consider the following construction:
+
+![alt text](/assets/treewidth_figs/dummy.png)
+
+where the leaf one is the original tensor network with three open edges, and a dummy tensor $D$ is added as shown in the right figure.
+Then we may get a contraction order shown below, where the dummy tensor can be anywhere in the contraction tree, and the red line represents the path to it.
+Along the path to the dummy tensor, we rotate the nodes locally.
+For example, from the left one to the middle one, we consider the contraction $B, ijmn \to jkm$, and we rotate the $ijmn$, which is an intermediate tensor on the path, as root and make $B$ and $jkm$ ($C$) its children.
+Similarly, in next step we rotate the contraction $A, D \to ikmn$, and make $D$ the last tensor to be contracted, so that by removing $D$ we get the contraction order of the original tensor network.
+
+![alt text](/assets/treewidth_figs/pivot_tree.png)
+
+It should be noted that in such process we only rotate the nodes locally without inducing any additional intermediate tensors, thus the complexity of the contraction is not changed.
+This strategy can change the construction order optimization problem of tensor network with open edges to that of network without open edges, so that various graph based methods can be applied.
+
+The method have been implemented in the [OMEinsumContractionOrders.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl), please see the function `pivot_tree` for detailed implementation.
+Here is an simple example:
+```julia
+julia> using OMEinsumContractionOrders
+
+# the original tensor network
+julia> eincode_origin = OMEinsumContractionOrders.EinCode([['a', 'b'], ['a', 'c', 'd'], ['b', 'c', 'e', 'f'], ['e']], ['d', 'f'])
+ab, acd, bcef, e -> df
+
+# with dummy tensor
+julia> eincode = OMEinsumContractionOrders.EinCode([['a', 'b'], ['a', 'c', 'd'], ['b', 'c', 'e', 'f'], ['e'], ['d', 'f']], Vector{Char}())
+ab, acd, bcef, e, df ->
+
+julia> nested_code = optimize_code(eincode, uniformsize(eincode, 2), ExactTreewidth())
+ab, ab ->
+├─ ab
+└─ acf, bcf -> ab
+   ├─ acd, df -> acf
+   │  ├─ acd
+   │  └─ df
+   └─ bcef, e -> bcf
+      ├─ bcef
+      └─ e
+
+# remove the dummy tensor
+julia> OMEinsumContractionOrders.pivot_tree(nested_code, 5)
+acf, acd -> df
+├─ ab, bcf -> acf
+│  ├─ ab
+│  └─ bcef, e -> bcf
+│     ├─ bcef
+│     └─ e
+└─ acd
+
+# it can also be used directly, the process above will be done automatically
+julia> nested_code_direct = optimize_code(eincode_origin, uniformsize(eincode, 2), ExactTreewidth())
+acf, acd -> df
+├─ ab, bcf -> acf
+│  ├─ ab
+│  └─ bcef, e -> bcf
+│     ├─ bcef
+│     └─ e
+└─ acd
+```
 
 <!-- reference -->
+## Reference
 
-[^Markov]: Markov, Igor L., and Yaoyun Shi. “Simulating Quantum Computation by Contracting Tensor Networks.” SIAM Journal on Computing 38, no. 3 (January 2008): 963–81. https://doi.org/10.1137/050644756.
-[^linegraph]: [https://en.wikipedia.org/wiki/Line_graph](https://en.wikipedia.org/wiki/Line_graph)
-[^treedecomp]: [https://en.wikipedia.org/wiki/Tree_decomposition](https://en.wikipedia.org/wiki/Tree_decomposition)
-[^Bouchitté]: Bouchitté, Vincent, and Ioan Todinca. “Treewidth and Minimum Fill-in: Grouping the Minimal Separators.” SIAM Journal on Computing 31, no. 1 (January 2001): 212–32. https://doi.org/10.1137/S0097539799359683.
-[^Berry]: Berry, Anne, Jean-Paul Bordat, and Olivier Cogis. “Generating All the Minimal Separators of a Graph.” In Graph-Theoretic Concepts in Computer Science, edited by Peter Widmayer, Gabriele Neyer, and Stephan Eidenbenz, 1665:167–72. Lecture Notes in Computer Science. Berlin, Heidelberg: Springer Berlin Heidelberg, 1999. https://doi.org/10.1007/3-540-46784-X_17.
-[^BouchittéListing]: Bouchitté, Vincent, and Ioan Todinca. “Listing All Potential Maximal Cliques of a Graph.” Theoretical Computer Science, 2002.
+[^Gray]: Gray, Johnnie, and Stefanos Kourtis. “Hyper-Optimized Tensor Network Contraction.” Quantum 5 (March 15, 2021): 410. [https://doi.org/10.22331/q-2021-03-15-410](https://doi.org/10.22331/q-2021-03-15-410).
+[^kahypar]: Schlag, Sebastian, Tobias Heuer, Lars Gottesbüren, Yaroslav Akhremtsev, Christian Schulz, and Peter Sanders. “High-Quality Hypergraph Partitioning.” ACM Journal of Experimental Algorithmics 27 (December 31, 2022): 1–39. [https://doi.org/10.1145/3529090](https://doi.org/10.1145/3529090).
+[^Kalachev]: Kalachev, Gleb, Pavel Panteleev, and Man-Hong Yung. “Multi-Tensor Contraction for XEB Verification of Quantum Circuits.” arXiv, May 18, 2022. [https://doi.org/10.48550/arXiv.2108.05665](https://doi.org/10.48550/arXiv.2108.05665).
+[^Markov]: Markov, Igor L., and Yaoyun Shi. “Simulating Quantum Computation by Contracting Tensor Networks.” SIAM Journal on Computing 38, no. 3 (January 2008): 963–81. [https://doi.org/10.1137/050644756](https://doi.org/10.1137/050644756).
+[^Bouchitté]: Bouchitté, Vincent, and Ioan Todinca. “Treewidth and Minimum Fill-in: Grouping the Minimal Separators.” SIAM Journal on Computing 31, no. 1 (January 2001): 212–32. [https://doi.org/10.1137/S0097539799359683](https://doi.org/10.1137/S0097539799359683).
+[^Berry]: Berry, Anne, Jean-Paul Bordat, and Olivier Cogis. “Generating All the Minimal Separators of a Graph.” In Graph-Theoretic Concepts in Computer Science, edited by Peter Widmayer, Gabriele Neyer, and Stephan Eidenbenz, 1665:167–72. Lecture Notes in Computer Science. Berlin, Heidelberg: Springer Berlin Heidelberg, 1999. [https://doi.org/10.1007/3-540-46784-X_17](https://doi.org/10.1007/3-540-46784-X_17).
+[^BouchittéListing]: Bouchitté, Vincent, and Ioan Todinca. “Listing All Potential Maximal Cliques of a Graph.” Theoretical Computer Science, 2002. [https://doi.org/10.1016/S0304-3975(01)00007-X](https://doi.org/10.1016/S0304-3975(01)00007-X).
+[^Tuukka]: Tuukka Korhonen, "Finding Optimal Tree Decompositions", 2020. [https://tuukkakorhonen.com/papers/msc-thesis.pdf](https://tuukkakorhonen.com/papers/msc-thesis.pdf)
