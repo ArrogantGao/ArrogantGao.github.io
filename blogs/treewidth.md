@@ -49,10 +49,10 @@ The contraction tree can be represented as a rooted tree, where the leaves are t
 ### Tools for Tensor Network Contraction Order Optimization
 
 In practice, there are many tools for tensor network contraction order optimization, including:
-* [OMEinsumContractionOrder.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl): a open-source Julia package for finding the optimal contraction order of tensor networks.
+* [OMEinsumContractionOrder.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl): an open-source Julia package for finding the optimal contraction order of tensor networks, is used as backend of [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl) and [ITensorNetworks.jl](https://github.com/mtfishman/ITensorNetworks.jl).
 * [Cotengra](https://cotengra.readthedocs.io/en/latest/)[^Gray] : a python library for contracting tensor networks or einsum expressions involving large numbers of tensors.
 
-Various methods have been proposed for optimizing the contraction order, including:
+Various methods have been proposed for optimizing the contraction order, here we introduce some of them:
 
 #### Greedy Algorithm
 
@@ -63,7 +63,7 @@ The method has already been used in both OMEinsumContractionOrders.jl and Coteng
 
 #### Binary Partition
 
-A given tensor network can be regarded as a hypergraph, where the tensors are the vertices and the shared indices are the hyperedges, where the cost of contracting a hyper edge can be encoded as its weight. The binary partition method is to partition the hypergraph into two parts, and then recursively partition each part. Cost of each partition can be evaluated by the sum of the weights of the hyperedges cut by the partition, while we prefer to make the partition as balanced as possible (balance means size of the subgraph should be similar). Thus, the problem is reduced to a balanced min cut problem on a hypergraph. In the past few decades, the graph community has developed many algorithms for the balanced min cut problem and provided the corresponding software packages, such as [KaHyPar](https://kahypar.org) [^kahypar], which has already been used in both OMEinsumContractionOrders.jl and Cotengra. 
+A given tensor network can be regarded as a hypergraph, where the tensors are the vertices and the shared indices are the hyperedges, and the cost of contracting a hyper edge can be encoded as its weight. The binary partition method is to partition the hypergraph into two parts, and then recursively partition each part. Cost of each partition can be evaluated by the sum of the weights of the hyperedges cut by the partition, while we prefer to make the partition as balanced as possible (balance means size of the subgraph should be similar). Thus, the problem is reduced to a balanced min cut problem on a hypergraph. In the past few decades, the graph community has developed many algorithms for the balanced min cut problem and provided the corresponding software packages, such as [KaHyPar](https://kahypar.org) [^kahypar], which has already been used in both OMEinsumContractionOrders.jl and Cotengra. 
 
 #### Tree Simulated Annealing
 
@@ -86,7 +86,10 @@ However, they are heuristic methods and may not guarantee to find the optimal co
 
 ## Finding the Optimal Contraction Order
 
-In the previous section, we introduce the concept of tensor network and its contraction order, so that now you should understand why the contraction order so important. Then the next question is how to find the optimal contraction order. Then in this section, we will introduce one way to find the theoretical optimal contraction order based on the exact tree width solver, according to the following well known theorem[^Markov] :
+In the previous section, we introduce the concept of tensor network and its contraction order, so that now you should understand why the contraction order so important. 
+Then the next question is how to find the optimal contraction order.
+
+In this section, we will introduce one way to find the theoretical optimal contraction order based on the exact tree width solver, according to the following well known theorem[^Markov] :
 
 **Theorem 1**. Let $C$ be a quantum circuit with $T$ gates and whose underlying circuit graph is $G_c$. Then $C$ can be simulated deterministically in time $T^{O(1)} e^{O(tw(G_C))}$, where $tw(G_C)$ is the treewidth of $G_C$.
 
@@ -108,7 +111,8 @@ For a tensor network, we can construct a hypergraph $G$ whose vertices are the t
 
 ![Fig.1](/assets/treewidth_figs/linegraph.png)
 
-Since we are considering a tensor network, dimension of the indices have to be considered. Therefore, we define the line graph $L(G)$ as a weighted graph, and the weight of its vertices is given by the $\log_2(d)$, where $d$ is the dimension of the index. 
+Since we are considering a tensor network, dimension of the indices have to be considered. 
+Therefore, for each vertex of the line graph $L(G)$, we define its weight as $\log_2(d)$, where $d$ is the dimension of the index. 
 
 In this way, any possible tensor can be represented as a subgraph induced by a set of vertices in $L(G)$, and its log2 size is given by the sum of weights of the boundary vertices of the subgraph. For example, the tensor $C$ in the figure above corresponding to the subgraph induced by the vertices $\{b, d, f\}$, and its log2 size is 
 $${dims(b) \times dims(d) \times dims(f)} = 2^{w(b) + w(d) + w(f)}$$
@@ -133,7 +137,7 @@ where the left graph is the original graph and the right one is the tree decompo
 All the nodes of the tree are called **tree bags**, and the intersection of two bags is called a **separator**.
 The width of a tree decomposition is the size of the largest bag minus one, thus the width of the example above is $2$.
 Clearly, one graph can have multiple tree decompositions, and the **tree width** of a graph is the minimum width of all possible tree decompositions.
-For weighted graphs, we define the width as sum of weights of the vertices in the bags minus one.
+For graphs with weights on vertices, we define the width as sum of weights of the vertices in the bags minus one.
 
 ### From Tree Decomposition to Contraction Order
 
@@ -150,12 +154,12 @@ An example of contraction order is shown in the following figure:
 where the tree decomposition gives the elimination order $a, b, d, f, c, h, e, g, i$, and this lead to a contraction order $(((((A, B), C), F), D), E)$.
 Of course, the contraction order is not unique by selecting different node as the root of the decomposition tree, but the space complexity of the contraction is the same for all possible contraction orders.
 
-For the section question, we have the following two reasons:
+For the second question, we have the following two reasons:
 
 1. Width of the tree decomposition is an upper bound of the space complexity of the corresponding contraction.
 2. Total dimension of the indices in the same tree bag is the time complexity of the corresponding step of the contraction.
 
-For example, consider the example contraction above, in the first step $a$ is eliminated, and the corresponding operations is
+For example, in the first step of the construction above, the index $a$ is eliminated, and the corresponding operations is
 $$A'_{bcde} = \sum_{a} A_{abc} B_{cde}$$
 where the space complexity is bounded by width and the time complexity is given by the dimension of the indices in bag.
 
@@ -181,8 +185,8 @@ To introduce the algorithm, we first need to introduce the concept of **minimum 
 **Definition 2**. A subset $S \subseteq V$ is an $a, b$-separator for two nonadjacent vertices $a, b \in V$ if the removal of $S$ from the graph separates $a$ and $b$ in different connected components. $S$ is a minimal $a, b$-separator if no proper subset of $S$ separates $a$ and $b$.
 
 For all pairs of nonadjacent vertices $a, b \in V$, the set of all minimal $a, b$-separators are called the minimal separators of the graph, represented by $\Delta(G)$.
-In practice, we can examine a set of vertices $S$ by check the connected components of the graph after removing $S$, $\mathcal{C}(G / S)$. 
-* If there are two or more connected components whose neighbor is exactly the set $S$, then $S$ is a separator, and the components are called full components.
+In practice, we can examine a set of vertices $S$ by checking properties of the connected components of the graph after removing $S$, represented as $\mathcal{C}(G / S)$:
+* If there are two or more connected components $C \in \mathcal{C}(G / S)$ whose neighbor is exactly the set $S$, then $S$ is a separator, and the components are called **full components**.
 
 **Definition 3**. A vertex set $\Omega$ of a graph $G$ is called a potential maximal clique if there is a minimal triangulation $H$ of $G$ such that $\Omega$ is a maximal clique of $H$.
 
@@ -192,16 +196,34 @@ In practice, we can use the following conditions to check whether a set of verti
 * $\Omega$ has no full component.
 * For any pair of distinct vertices $u, v \in Ω$, either $(u, v) \in E(G)$ or there is a component $C \in \mathcal{C}(G / \Omega)$ with $(u, v) \in N(C)$.
 
-In the first phase, the BT algorithm first search for $\Delta(G)$, and the using $\Delta(G)$ to search for $\Pi(G)$.
+In the first phase, the BT algorithm enumerate the set of all pmcs, $\Pi(G)$.
 
 #### Enumerating Minimal Separators
 
-We first introduce the method introduced by Berry[^Berry] to enumerate all minimal separators of a graph.
+We first introduce the method introduced by Berry[^Berry] to enumerate all minimal separators of a graph, which is part of the method to search for all pmcs.
 Briefly, the algorithm makes use of the fact that given a separator, neighbors of its components are minimal separators.
 Then the algorithm starts from the simplest minimal separator, i.e., neighbors of a single vertex, and then iteratively add vertices to the separator to find all minimal separators.
 The algorithm is shown below:
 
 ![alt text](/assets/treewidth_figs/min_seps.png)
+
+An example to enumerate all minimal separators is shown below:
+```julia
+julia> using TreeWidthSolver, Graphs
+
+julia> g = smallgraph(:cubical)
+{8, 12} undirected simple Int64 graph
+
+# covert the graph to a labeled simple graph, which is a structure of graph defined in TreeWidthSolver.jl
+julia> all_min_sep(LabeledSimpleGraph(g))
+Set{Set{Int64}} with 14 elements:
+  Set([4, 7, 8, 1])
+  Set([4, 7, 2])
+  Set([5, 7, 2])
+  Set([4, 6, 2, 8])
+  Set([5, 7, 3, 1])
+  ...
+```
 
 
 #### Enumerating Potential Maximal Cliques
@@ -220,12 +242,29 @@ The algorithm is shown below:
 
 ![alt text](/assets/treewidth_figs/one_more_vertex.png)
 
+Here is an example to enumerate all pmcs of a graph:
+```julia
+julia> using TreeWidthSolver, Graphs
+
+julia> g = smallgraph(:cubical)
+{8, 12} undirected simple Int64 graph
+
+julia> all_pmc(LabeledSimpleGraph(g))
+Set{Set{Int64}} with 34 elements:
+  Set([5, 4, 8, 3, 1])
+  Set([4, 6, 7, 2, 1])
+  Set([5, 4, 2, 8, 3])
+  Set([5, 6, 7, 2, 1])
+  Set([4, 6, 3, 1])
+  ...
+```
+
 ### Constructing the Tree Decomposition
 
 In the second phase, with all pmcs, the algorithm constructs the tree decomposition with minimal width.
 First, we use the pmcs to construct all possible $(\Omega, S, C)$ in $G$, where $S \subsetneq \Omega \subseteq (S \cup C)$.
 For example, $(\Omega_1, S_1, C_1)$ in the following graph is a possible triple.
-Then we can sort all these triples according to the size of $S \cup C$, and the largest ones are simply $(\Omega, \emptyset, G)$.
+Then we can sort all these triples according to the size of $S \cup C$, and the largest ones are simply $(\Omega, \emptyset, G)$, $\Omega \in \Pi(G)$.
 
 ![alt text](/assets/treewidth_figs/SC_pairs.png)
 
@@ -245,18 +284,35 @@ The algorithm[^Tuukka] is shown below, we used the version rewritten by Tuukka K
 The algorithm gives both minimal width and also the corresponding tree decomposition, which can be used to find the optimal contraction order of the tensor network.
 For details about the implementation of the BT algorithm, please refer to the [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl) package.
 
+Here is an example:
+```julia
+julia> using TreeWidthSolver, Graphs
+
+julia> g = smallgraph(:cubical)
+{8, 12} undirected simple Int64 graph
+
+julia> exact_treewidth(LabeledSimpleGraph(g))
+tree width: 3
+tree decomposition:
+Set([4, 6, 3, 1])
+└─ Set([6, 8, 3, 1])
+   ├─ Set([5, 6, 8, 1])
+   ├─ Set([6, 7, 8, 3])
+   └─ Set([2, 8, 3, 1])
+```
+where both tree width and the corresponding tree decomposition are given.
 
 ### Tensor Network with Open Edges
 
-In the previous sections, we introduced how to construct an optimal contraction order for a closed tensor network by finding the optimal tree decomposition of its line graph, where all indices are contracted.
+In the previous sections, we introduced how to construct an optimal contraction order for a tensor network with no open edges by finding the optimal tree decomposition of its line graph, where all indices are contracted.
 However, in practice, we often encounter tensor networks with open edges, where some indices are not contracted.
-In this case, method based on bi-partition or tree decomposition may not be directly applied, since the complexity contributed by the open edges will not be reduced by any contraction, and neither balance min cut nor tree decomposition can correctly handle that.
+In this case, method based on bi-partition or tree decomposition can not be directly applied, since the complexity contributed by the open edges will not be reduced by any contraction, and neither balance min cut nor tree decomposition can correctly handle that.
 
 To solve this problem, we develop a method by add a dummy tensor to the tensor network, where the dummy tensor has the same dimension as the open indices, and the dummy tensor is connected to all the tensors with open indices.
 Then we can obtain the contraction order of the new network, which can be easy since now there is no open edges.
 Finally, the contraction tree is rotated without changing the contraction complexity, which makes the dummy tensor the last tensor to be contracted so that can be removed, and the contraction order of the original tensor network is obtained.
 
-For example, consider the following construction:
+For example, consider the following contraction:
 
 ![alt text](/assets/treewidth_figs/dummy.png)
 
