@@ -23,12 +23,31 @@
 
 <item>
   <title>
-    <![CDATA[  TreeWidthSolver.jl  ]]>
+    <![CDATA[  Finding the Optimal Tree Decomposition with Minimal Treewidth  ]]>
   </title>
   <link> https://arrogantgao.github.io/blogs/treewidth/index.html </link>
   <guid> https://arrogantgao.github.io/blogs/treewidth/index.html </guid>
   <description>
-    <![CDATA[  An introduction to TreeWidthSolver.jl, which can be used to solve tree decomposition with minimal treewidth of a given simple graph, which can be used to find the optimal contraction order of tensor networks.  ]]>
+    <![CDATA[  An introduction to TreeWidthSolver.jl, which can be used to solve tree decomposition with minimal treewidth of a given simple graph.  ]]>
+  </description>  
+    
+  <pubDate>Thu, 15 Aug 2024 00:00:00 +0000</pubDate>  
+  
+  
+  <atom:author>
+    <atom:name>Xuanzhao Gao</atom:name>
+  </atom:author>
+        
+</item>
+
+<item>
+  <title>
+    <![CDATA[  Tensor network contraction order with optimal tree decomposition  ]]>
+  </title>
+  <link> https://arrogantgao.github.io/blogs/contractionorder/index.html </link>
+  <guid> https://arrogantgao.github.io/blogs/contractionorder/index.html </guid>
+  <description>
+    <![CDATA[  An introduction to tensor network contraction order optimizer based on tree decomposition.  ]]>
   </description>  
     
   <pubDate>Sat, 03 Aug 2024 00:00:00 +0000</pubDate>  
