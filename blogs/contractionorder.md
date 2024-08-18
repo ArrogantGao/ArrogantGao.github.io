@@ -246,7 +246,13 @@ julia> code(A, B, C, D, E, F) ≈ optcode(A, B, C, D, E, F)
 true
 ```
 
+This optimizer will be used as an extension of [TensorOperations.jl](https://github.com/Jutho/TensorOperations.jl) in the future, see this [PR](https://github.com/Jutho/TensorOperations.jl/pull/185).
+We compared the performance of this method against the default optimizer of TensorOperations.jl based on exhaustive searching, the results is shown below.
 
+![](https://github.com/ArrogantGao/TreeWidthSolver_benchmark/blob/main/figs/compare_TO.png?raw=true)
+
+The results shown that the tree width based solver is faster for some graph similar to trees.
+For more details, please see the benchmark repo: [https://github.com/ArrogantGao/TreeWidthSolver_benchmark](https://github.com/ArrogantGao/TreeWidthSolver_benchmark).
 
 <!-- ### Tensor Network with Open Edges
 
