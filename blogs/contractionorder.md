@@ -16,6 +16,8 @@ This blog covers the following contents:
 2. Tree decomposition and its relation to contraction order
 3. Finding tree decomposition with minimal treewidth
 
+In this blog, we will use the Einsum notation from [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl).
+
 ## Tensor Network Contraction Order
 
 In this blog, we will not introduce the basic concept of tensor network, since it has been well introduced in many other places.
@@ -32,7 +34,15 @@ Considering the following simple tensor network:
 ![](/assets/treewidth_figs/ABCD.png)
 
 where the tensors are represented by the circles and the indices are represented by the lines, representing the following contraction to scalar $s$:
-$$s = \sum_{i,j,k,l} A_{ij} B_{ik} C_{jl} D_{lk}.$$
+$$s = \sum_{i,j,k,l} A_{ij} B_{ik} C_{jl} D_{lk},$$
+and can be represented as the following Einstein summation formula:
+```julia
+julia> using OMEinsum
+
+julia> einsum = ein"ij, ik, jl, lk -> "
+ij, ik, jl, lk ->
+```
+where pointing to nothing means the result is a scalar.
 Here we simply assume that all indices are of the same dimension $D$.
 Then the naive way to calculate the result is to loop over all the indices, which requires $O(D^4)$ operations and no intermediate tensors are produced.
 
@@ -41,9 +51,34 @@ However, another way to calculate $s$ is shown below:
 ![](/assets/treewidth_figs/ABCD_contraction.png)
 
 where we first contract $A$ and $B$ to get $AB$, and contract $C$ and $D$ to get $CD$, which are rank-2 intermediate tensors, and then contract $AB$ with $CD$ to get the scalar $s$.
-In this way, the total number of operations is $O(D^{3})$, which is smaller than the naive calculation, while the trade-off is that we need to store the intermediate tensors $AB$ and $CD$ with size of $O(D^{2})$.
+That is equivalent to the following Einstein summation formula:
+```julia
+julia> nested_ein = ein"(ij, ik), (jl, lk) -> "
+jk, jk ->
+├─ ij, ik -> jk
+│  ├─ ij
+│  └─ ik
+└─ jl, lk -> jk
+   ├─ jl
+   └─ lk
+```
+In this way, the total number of operations is $O(2 D^{3} + D^{2})$, which is smaller than the naive calculation, while the trade-off is that we need to store the intermediate tensors $AB$ and $CD$ with size of $O(D^{2})$, as shown below:
+```julia
+# here we take D = 16
+julia> size_dict = uniformsize(einsum, 2^4)
+
+julia> contraction_complexity(einsum, size_dict)
+Time complexity: 2^16.0
+Space complexity: 2^0.0
+Read-write complexity: 2^10.001408194392809
+
+julia> contraction_complexity(nested_ein, size_dict)
+Time complexity: 2^13.044394119358454
+Space complexity: 2^8.0
+Read-write complexity: 2^11.000704269011246
+```
 We say such a contraction is with **time complexity** of $O(D^{3})$ and **space complexity** of $O(D^{4})$, which are defined as follows:
-* **time complexity**: the number of floating point operations required to calculate the result;
+* **time complexity**: the number of Floating Point operations required to calculate the result;
 * **space complexity**: the largest size of the intermediate tensors.
 For larger tensor networks, the contraction order is important, since it can greatly reduce the time complexity of the calculation.
 
@@ -63,7 +98,15 @@ In practice, there are many tools for tensor network contraction order optimizat
 * [OMEinsumContractionOrder.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl): an open-source Julia package for finding the optimal contraction order of tensor networks, is used as backend of [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl) and [ITensorNetworks.jl](https://github.com/mtfishman/ITensorNetworks.jl).
 * [Cotengra](https://cotengra.readthedocs.io/en/latest/)[^Gray] : a python library for contracting tensor networks or einsum expressions involving large numbers of tensors.
 
-Various methods have been proposed for optimizing the contraction order, here we introduce some of them:
+Various methods have been proposed for optimizing the contraction order, as shown in the table below, here we introduce some of them.
+
+| Optimizer      | Description | Available in |
+| ----------- | ----------- | ----------- |
+| Exhaustive Search | Slow, exact | TensorOperations.jl |
+| Greedy Algorithm | Fast, heuristic | OMEinsumContractionOrders.jl, Cotengra |
+| Binary Partition | Fast, heuristic | OMEinsumContractionOrders.jl, Cotengra |
+| Local Search | Fast, heuristic | OMEinsumContractionOrders.jl |
+| Exact Treewidth | Slow, exact | OMEinsumContractionOrders.jl |
 
 #### Exhaustive Search
 
@@ -86,9 +129,9 @@ The method has already been used in both OMEinsumContractionOrders.jl and Coteng
 
 A given tensor network can be regarded as a hypergraph, where the tensors are the vertices and the shared indices are the hyperedges, and the cost of contracting a hyper edge can be encoded as its weight. The binary partition method is to partition the hypergraph into two parts, and then recursively partition each part. Cost of each partition can be evaluated by the sum of the weights of the hyperedges cut by the partition, while we prefer to make the partition as balanced as possible (balance means size of the subgraph should be similar). Thus, the problem is reduced to a balanced min cut problem on a hypergraph. In the past few decades, the graph community has developed many algorithms for the balanced min cut problem and provided the corresponding software packages, such as [KaHyPar](https://kahypar.org) [^kahypar], which has already been used in both OMEinsumContractionOrders.jl and Cotengra. 
 
-#### Tree Simulated Annealing
+#### Local Search Method
 
-Tree simulating annealing (TreeSA) [^Kalachev] is another type of the optimization method based on local search and simulating annealing. TreeSA is based on the following rules:
+The local search method [^Kalachev] (also called the tree simulated annealing) is another type of the optimization method based on local search and simulating annealing. TreeSA is based on the following rules:
 
 * Associativity: $T \times (S \times R) = (T \times S) \times R$,
 * Commutativity: $T \times S = S \times T$.
@@ -110,14 +153,71 @@ In the following sections, we will introduce a method to find the optimal contra
 In the previous section, we introduce the concept of tensor network and its contraction order, so that now you should understand why the contraction order so important. 
 Then the next question is how to find the optimal contraction order.
 
-In this section, we will introduce one way to find the theoretical optimal contraction order based on the exact tree width solver, according to the following well known theorem[^Markov] :
+In our work, we propose to use the tree decomposition of the line graph of the hypergraph representation of the tensor network to find the optimal contraction order, according to the following well known theorem[^Markov] :
 
 **Theorem 1**. Let $C$ be a quantum circuit with $T$ gates and whose underlying circuit graph is $G_c$. Then $C$ can be simulated deterministically in time $T^{O(1)} e^{O(tw(G_C))}$, where $tw(G_C)$ is the treewidth of $G_C$.
 
 Using the language of tensor network, we can rewrite the above theorem as follows: the bottleneck of time complexity of the contraction of a tensor network is $O(e^{O(tw(L(G)))})$, where $L(G)$ is the line graph of the hypergraph representation of the tensor network. 
 Therefore, if we can find the tree decomposition of the tensor network with minimal treewidth, we can find the optimal contraction order of the tensor network.
+We developed a package [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl) for finding the optimal tree decomposition of a given simple graph, which can be used as a backend of [OMEinsumContractionOrders.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl).
+For more details about the tree decomposition and its relation to the contraction order, please refer to the appendix.
 
-To further make use of the theorem, we need to introduce the concepts of line graph, tree width and tree decomposition.
+Here is an example of usage:
+```julia
+julia> using OMEinsum, OMEinsumContractionOrders
+
+# define the contraction using Einstein summation
+julia> code = ein"ijl, ikm, jkn, l, m, n -> "
+ijl, ikm, jkn, l, m, n -> 
+
+ulia> optimizer = ExactTreewidth()
+ExactTreewidth{GreedyMethod{Float64, Float64}}(GreedyMethod{Float64, Float64}(0.0, 0.0, 1))
+
+# set the size of the indices
+julia> size_dict = uniformsize(code, 2)
+Dict{Char, Int64} with 6 entries:
+  'n' => 2
+  'j' => 2
+  'i' => 2
+  'l' => 2
+  'k' => 2
+  'm' => 2
+
+julia> optcode = optimize_code(code, size_dict, optimizer)
+n, n -> 
+├─ jk, jkn -> n
+│  ├─ ij, ik -> jk
+│  │  ├─ ijl, l -> ij
+│  │  │  ├─ ijl
+│  │  │  └─ l
+│  │  └─ ikm, m -> ik
+│  │     ├─ ikm
+│  │     └─ m
+│  └─ jkn
+└─ n
+
+# check the complexity
+julia> contraction_complexity(optcode, size_dict)
+Time complexity: 2^5.087462841250339
+Space complexity: 2^2.0
+Read-write complexity: 2^5.882643049361841
+
+# check the results
+julia> A = rand(2, 2, 2); B = rand(2, 2, 2); C = rand(2, 2, 2); D = rand(2); E = rand(2); F = rand(2);
+
+julia> code(A, B, C, D, E, F) ≈ optcode(A, B, C, D, E, F)
+true
+```
+
+This optimizer will be used as an extension of [TensorOperations.jl](https://github.com/Jutho/TensorOperations.jl) in the future, see this [PR](https://github.com/Jutho/TensorOperations.jl/pull/185).
+We compared the performance of this method against the default optimizer of TensorOperations.jl based on exhaustive searching, the results is shown below.
+
+![](https://github.com/ArrogantGao/TreeWidthSolver_benchmark/blob/main/figs/compare_TO.png?raw=true)
+
+The results shown that the tree width based solver is faster for some graph similar to trees.
+For more details, please see the benchmark repo: [https://github.com/ArrogantGao/TreeWidthSolver_benchmark](https://github.com/ArrogantGao/TreeWidthSolver_benchmark).
+
+## Appendix: Details about Tree Decomposition and its Relation to Contraction Order
 
 ### Line Graph
 
@@ -195,134 +295,6 @@ In the example above, $BE$ has indices $ik$, corresponding to the separator $\{i
 Therefore, in a tree bag all indices are "connected", in each step of the contraction, we will have to loop over all the indices in the same bag, so that the bottleneck of time complexity is exactly by $O(e^{tw(G) + 1})$, and the since all intermediate tensors are characterized by the separators, and separators are real subset of tree bags, the space complexity bounded by $O(e^{tw(G)})$.
 
 Thus, we can conclude that the contraction order obtained from the optimal tree decomposition is the optimal contraction order of the tensor network.
-
-### Example of Usage
-
-The optimizer based on tree decomposition has been implemented in [OMEinsumContractionOrders.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl).
-Here is an example of usage:
-```julia
-julia> using OMEinsum, OMEinsumContractionOrders
-
-# define the contraction using Einstein summation
-julia> code = ein"ijl, ikm, jkn, l, m, n -> "
-ijl, ikm, jkn, l, m, n -> 
-
-ulia> optimizer = ExactTreewidth()
-ExactTreewidth{GreedyMethod{Float64, Float64}}(GreedyMethod{Float64, Float64}(0.0, 0.0, 1))
-
-# set the size of the indices
-julia> size_dict = uniformsize(code, 2)
-Dict{Char, Int64} with 6 entries:
-  'n' => 2
-  'j' => 2
-  'i' => 2
-  'l' => 2
-  'k' => 2
-  'm' => 2
-
-julia> optcode = optimize_code(code, size_dict, optimizer)
-n, n -> 
-├─ jk, jkn -> n
-│  ├─ ij, ik -> jk
-│  │  ├─ ijl, l -> ij
-│  │  │  ├─ ijl
-│  │  │  └─ l
-│  │  └─ ikm, m -> ik
-│  │     ├─ ikm
-│  │     └─ m
-│  └─ jkn
-└─ n
-
-# check the complexity
-julia> contraction_complexity(optcode, size_dict)
-Time complexity: 2^5.087462841250339
-Space complexity: 2^2.0
-Read-write complexity: 2^5.882643049361841
-
-# check the results
-julia> A = rand(2, 2, 2); B = rand(2, 2, 2); C = rand(2, 2, 2); D = rand(2); E = rand(2); F = rand(2);
-
-julia> code(A, B, C, D, E, F) ≈ optcode(A, B, C, D, E, F)
-true
-```
-
-This optimizer will be used as an extension of [TensorOperations.jl](https://github.com/Jutho/TensorOperations.jl) in the future, see this [PR](https://github.com/Jutho/TensorOperations.jl/pull/185).
-We compared the performance of this method against the default optimizer of TensorOperations.jl based on exhaustive searching, the results is shown below.
-
-![](https://github.com/ArrogantGao/TreeWidthSolver_benchmark/blob/main/figs/compare_TO.png?raw=true)
-
-The results shown that the tree width based solver is faster for some graph similar to trees.
-For more details, please see the benchmark repo: [https://github.com/ArrogantGao/TreeWidthSolver_benchmark](https://github.com/ArrogantGao/TreeWidthSolver_benchmark).
-
-<!-- ### Tensor Network with Open Edges
-
-In the previous sections, we introduced how to construct an optimal contraction order for a tensor network with no open edges by finding the optimal tree decomposition of its line graph, where all indices are contracted.
-However, in practice, we often encounter tensor networks with open edges, where some indices are not contracted.
-In this case, method based on bi-partition or tree decomposition can not be directly applied, since the complexity contributed by the open edges will not be reduced by any contraction, and neither balance min cut nor tree decomposition can correctly handle that.
-
-To solve this problem, we develop a method by add a dummy tensor to the tensor network, where the dummy tensor has the same dimension as the open indices, and the dummy tensor is connected to all the tensors with open indices.
-Then we can obtain the contraction order of the new network, which can be easy since now there is no open edges.
-Finally, the contraction tree is rotated without changing the contraction complexity, which makes the dummy tensor the last tensor to be contracted so that can be removed, and the contraction order of the original tensor network is obtained.
-
-For example, consider the following contraction:
-
-![alt text](/assets/treewidth_figs/dummy.png)
-
-where the leaf one is the original tensor network with three open edges, and a dummy tensor $D$ is added as shown in the right figure.
-Then we may get a contraction order shown below, where the dummy tensor can be anywhere in the contraction tree, and the red line represents the path to it.
-Along the path to the dummy tensor, we rotate the nodes locally.
-For example, from the left one to the middle one, we consider the contraction $B, ijmn \to jkm$, and we rotate the $ijmn$, which is an intermediate tensor on the path, as root and make $B$ and $jkm$ ($C$) its children.
-Similarly, in next step we rotate the contraction $A, D \to ikmn$, and make $D$ the last tensor to be contracted, so that by removing $D$ we get the contraction order of the original tensor network.
-
-![alt text](/assets/treewidth_figs/pivot_tree.png)
-
-It should be noted that in such process we only rotate the nodes locally without inducing any additional intermediate tensors, thus the complexity of the contraction is not changed.
-This strategy can change the construction order optimization problem of tensor network with open edges to that of network without open edges, so that various graph based methods can be applied.
-
-The method have been implemented in the [OMEinsumContractionOrders.jl](https://github.com/TensorBFS/OMEinsumContractionOrders.jl), please see the function `pivot_tree` for detailed implementation.
-Here is an simple example:
-```julia
-julia> using OMEinsumContractionOrders
-
-# the original tensor network
-julia> eincode_origin = OMEinsumContractionOrders.EinCode([['a', 'b'], ['a', 'c', 'd'], ['b', 'c', 'e', 'f'], ['e']], ['d', 'f'])
-ab, acd, bcef, e -> df
-
-# with dummy tensor
-julia> eincode = OMEinsumContractionOrders.EinCode([['a', 'b'], ['a', 'c', 'd'], ['b', 'c', 'e', 'f'], ['e'], ['d', 'f']], Vector{Char}())
-ab, acd, bcef, e, df ->
-
-julia> nested_code = optimize_code(eincode, uniformsize(eincode, 2), ExactTreewidth())
-ab, ab ->
-├─ ab
-└─ acf, bcf -> ab
-   ├─ acd, df -> acf
-   │  ├─ acd
-   │  └─ df
-   └─ bcef, e -> bcf
-      ├─ bcef
-      └─ e
-
-# remove the dummy tensor
-julia> OMEinsumContractionOrders.pivot_tree(nested_code, 5)
-acf, acd -> df
-├─ ab, bcf -> acf
-│  ├─ ab
-│  └─ bcef, e -> bcf
-│     ├─ bcef
-│     └─ e
-└─ acd
-
-# it can also be used directly, the process above will be done automatically
-julia> nested_code_direct = optimize_code(eincode_origin, uniformsize(eincode, 2), ExactTreewidth())
-acf, acd -> df
-├─ ab, bcf -> acf
-│  ├─ ab
-│  └─ bcef, e -> bcf
-│     ├─ bcef
-│     └─ e
-└─ acd
-``` -->
 
 <!-- reference -->
 ## Reference
