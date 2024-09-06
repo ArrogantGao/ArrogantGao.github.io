@@ -113,7 +113,7 @@ Various methods have been proposed for optimizing the contraction order, as show
 The exhaustive search [^Robert] is a method to get the exact optimal contraction complexity.
 There are three different ways to implement the exhaustive search:
 * **Depth-first constructive approach**: in each step, choose a pair of tensors to contract a new tensor until all tensors are contracted, and then iterate over all possible contraction sequences without duplication. Note the cheapest contraction sequence thus found.
-* **Breadth-first constructive approach**: the breadth-first method construct the set of intermediate tensors by constructing $c$ tensors ($c \in [1, n - 1]$, where $n$ is the number of tensors) in each step, and record the optimal cost for constructing each intermediate tensor. Then in the last step, the optimal cost for constructing all $n$ tensors is obtained.
+* **Breadth-first constructive approach**: the breadth-first method construct the set of intermediate tensors by contracting $c$ tensors ($c \in [1, n - 1]$, where $n$ is the number of tensors) in each step, and record the optimal cost for constructing each intermediate tensor. Then in the last step, the optimal cost for contracting all $n$ tensors is obtained.
 * **Dynamic programming**: in each step, consider all bipartition that split the tensor network into two parts, if the optimal cost for each part is not recorded, further split them until the cost has been already obtained or only one tensor is left. Then combine the two parts and record the optimal cost of contracting the sub-networks. In this end the optimal cost for the whole network is obtained.
 In more recent work [^Robert], by reordering the search process in favor of cheapest-first and excluding large numbers of outer product contractions which are shown to be unnecessary, the efficiency of the exhaustive search has been greatly improved.
 The method has been implemented in [TensorOperations.jl](https://github.com/Jutho/TensorOperations.jl).
@@ -235,11 +235,8 @@ Then the line graph $L(G)$ of the hypergraph $G$ is the graph whose vertices are
 ![Fig.1](/assets/treewidth_figs/linegraph.png)
 
 Since we are considering a tensor network, dimension of the indices have to be considered. 
-Therefore, for each vertex of the line graph $L(G)$, we define its weight as $\log_2(d)$, where $d$ is the dimension of the index. 
-
-In this way, any possible tensor can be represented as a subgraph induced by a set of vertices in $L(G)$, and its log2 size is given by the sum of weights of the boundary vertices of the subgraph. For example, the tensor $C$ in the figure above corresponding to the subgraph induced by the vertices $\{b, d, f\}$, and its log2 size is 
-$${dims(b) \times dims(d) \times dims(f)} = 2^{w(b) + w(d) + w(f)}$$
-where $w(*)$ for weights of vertices.
+Therefore, for each vertex of the line graph $L(G)$, we define its weight as $\log_2(d)$, where $d$ is the dimension of the index.
+In this way, size of a tensor can be represented as the sum of weights of the vertices in $L(G)$.
 
 ### Tree Decomposition and Tree Width
 
@@ -253,8 +250,7 @@ The tree decomposition of a graph is a tree whose nodes are subsets of the verti
 
 All the nodes of the tree are called **tree bags**, and intersection of two bags is called a **separator**.
 The width of a tree decomposition is the size of the largest bag minus one.
-Clearly, one graph can have multiple tree decompositions, and the **tree width** of a graph is the minimum width of all possible tree decompositions, which is called an optimal tree decomposition.
-For graphs with weights on vertices, we define the width as sum of weights of the vertices in the bags minus one.
+Clearly, one graph can have multiple tree decomposition with different corresponding widths. The tree width of a graph is the minimal width of all such decompositions, and a particular decomposition (not necessarily unique) that realises this minimal width is called an optimal tree decomposition.
 
 An example of the optimal tree decomposition is shown in the following figure:
 
@@ -275,14 +271,14 @@ For each node of the tree decomposition, a vertex can be eliminated if it is in 
 
 ![](/assets/treewidth_figs/elimination_order2.png)
 
-and the order is $\{\{i, j, l\}, \{k\}, \{m\}, \{n\}\}$, where the last vertex to be eliminated first.
+and the order is $\{\{i, j, l\}, \{k\}, \{m\}, \{n\}\}$, where the last vertex is to be eliminated first.
 
 The elimination order of the indices can then be used to determine the contraction order of the tensor network, where two tensors are contracted if they share a common index and the index is eliminated.
 According to the elimination order above, the contraction is shown below:
 
 ![](/assets/treewidth_figs/elimination.png)
 
-Of course, the contraction order is not unique by selecting different node as the root of the decomposition tree, different contraction orders can be obtained.
+Of course, the contraction order is not unique as, by selecting different node as the root of the decomposition tree, different contraction orders can be obtained.
 
 Then to answer the second question, we have to introduce a property of the optimal tree decomposition:
 
@@ -293,6 +289,8 @@ For the separators, notice that in a contraction order from a tree decomposition
 In the example above, $BE$ has indices $ik$, corresponding to the separator $\{i, k\}$ between tree bags $\{i, j, k\}$ and $\{i, k, m\}$, and so on.
 
 Therefore, in a tree bag all indices are "connected", in each step of the contraction, we will have to loop over all the indices in the same bag, so that the bottleneck of time complexity is exactly by $O(e^{tw(G) + 1})$, and the since all intermediate tensors are characterized by the separators, and separators are real subset of tree bags, the space complexity bounded by $O(e^{tw(G)})$.
+
+**Remark**: It should be remarked in the general cases, sizes of the separators (the intersection of the bags) may not be size of the bags minus one.
 
 Thus, we can conclude that the contraction order obtained from the optimal tree decomposition is the optimal contraction order of the tensor network.
 
