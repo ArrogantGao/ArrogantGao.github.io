@@ -39,15 +39,15 @@ My Google Scholar profile can be found [here](https://scholar.google.fr/citation
   
 # Publications
 
-* ** XuanzhaoGao**, and Zecheng Gan. [Broken Symmetries in Quasi-2D Charged Systems via Negative Dielectric Confinement](https://doi.org/10.1063/5.0214523). The Journal of Chemical Physics 161, no. 1 (July 7, 2024): 011102.
+* **XuanzhaoGao**, and Zecheng Gan. [Broken Symmetries in Quasi-2D Charged Systems via Negative Dielectric Confinement](https://doi.org/10.1063/5.0214523). The Journal of Chemical Physics 161, no. 1 (July 7, 2024): 011102.
 
 * Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Fast Algorithm for Quasi-2D Coulomb Systems](http://arxiv.org/abs/2403.01521). arXiv, March 3, 2024.
 
-* Roa-Villescas Martin, **Xuanzhao Gao**, Sander Stuijk, Henk Corporaal, and Jin-Guo Liu. [Probabilistic Inference in the Era of Tensor Networks and Differential Programming](http://arxiv.org/abs/2405.14060). arXiv, May 22, 2024.
+* Roa-Villescas Martin, **Xuanzhao Gao**, Sander Stuijk, Henk Corporaal, and Jin-Guo Liu. [Probabilistic Inference in the Era of Tensor Networks and Differential Programming](https://doi.org/10.1103/PhysRevResearch.6.033261.) Physical Review Research 6, no. 3 (September 6, 2024): 033261. 
 
 * Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Random Batch Ewald Method for Dielectrically Confined Coulomb Systems](http://arxiv.org/abs/2405.06333). arXiv, May 10, 2024.
 
 # Talks
 
-* [*How to Implement Generic Matrix-Mul with Generic Element Types on GPU?*](/pre/CuTropicalGEMM.pdf), JuliaCN Meetup 2023, Shenzhen, China.
-* [*A Fast Algorithm for Quasi-2D Coulomb systems*](/pre/fast_algorithm_for_q2d_coulomb_systems.pdf), Scicade 2024, Tokyo, Japan.
+* [*How to Implement Generic Matrix-Mul with Generic Element Types on GPU?*](/_pre/CuTropicalGEMM.pdf), JuliaCN Meetup 2023, Shenzhen, China.
+* [*A Fast Algorithm for Quasi-2D Coulomb systems*](/_pre/fast_algorithm_for_q2d_coulomb_systems.pdf), Scicade 2024, Tokyo, Japan.
