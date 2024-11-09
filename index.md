@@ -49,6 +49,6 @@ My Google Scholar profile can be found [here](https://scholar.google.fr/citation
 
 # Talks
 
-* [*How to Implement Generic Matrix-Mul with Generic Element Types on GPU?*](/_pre/CuTropicalGEMM.pdf), JuliaCN Meetup 2023, Shenzhen, China.
-* [*A Fast Algorithm for Quasi-2D Coulomb systems*](/_pre/fast_algorithm_for_q2d_coulomb_systems.pdf), Scicade 2024, Tokyo, Japan.
-* [*TreeWidthSolver.jl: From Treewidth to Tensor Network Contraction Order*](/_pre/treewidth.pdf), JuliaCN Meetup 2024, Guangzhou, China.
+* [*How to Implement Generic Matrix-Mul with Generic Element Types on GPU?*](/pre/CuTropicalGEMM.pdf), JuliaCN Meetup 2023, Shenzhen, China.
+* [*A Fast Algorithm for Quasi-2D Coulomb systems*](/pre/fast_algorithm_for_q2d_coulomb_systems.pdf), Scicade 2024, Tokyo, Japan.
+* [*TreeWidthSolver.jl: From Treewidth to Tensor Network Contraction Order*](/pre/treewidth.pdf), JuliaCN Meetup 2024, Guangzhou, China.
