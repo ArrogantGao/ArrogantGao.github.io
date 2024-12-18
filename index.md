@@ -36,16 +36,25 @@ My Google Scholar profile can be found [here](https://scholar.google.fr/citation
   * A Julia package to calculate the electrostatic potential of charged systems using Chebyshev interpolation (very similar to NUFFT).
 * [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl)
   * A Julia package to solve tree decomposition with minimal treewidth of a given simple graph.
-  
+* [EwaldSummations.jl](https://github.com/HPMolSim/EwaldSummations.jl)
+  * A Julia package to calculate the electrostatic potential of charged systems using Ewald summation.
+* [OptimalBranching.jl](https://github.com/ArrogantGao/OptimalBranching.jl)
+  * A Julia package to find the optimal branching rules for the maximum independent set problem.
+
+
 # Publications
 
-* **XuanzhaoGao**, and Zecheng Gan. [Broken Symmetries in Quasi-2D Charged Systems via Negative Dielectric Confinement](https://doi.org/10.1063/5.0214523). The Journal of Chemical Physics 161, no. 1 (July 7, 2024): 011102.
+* **Xuanzhao Gao**, Yi-Jia Wang, Pan Zhang, and Jin-Guo Liu. [Automated Discovery of Branching Rules with Optimal Complexity for the Maximum Independent Set Problem](https://arxiv.org/abs/2412.07685). arXiv, December, 2024.
+
+* **Xuanzhao Gao**, Shidong Jiang, Jiuyang Liang, Zhenli Xu, and Qi Zhou. [A fast spectral sum-of-Gaussians method for electrostatic summation in quasi-2D systems](http://arxiv.org/abs/2412.04595). arXiv, December, 2024.
+
+* Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Random Batch Ewald Method for Dielectrically Confined Coulomb Systems](http://arxiv.org/abs/2405.06333). arXiv, May 10, 2024.
 
 * Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Fast Algorithm for Quasi-2D Coulomb Systems](http://arxiv.org/abs/2403.01521). arXiv, March 3, 2024.
 
 * Roa-Villescas Martin, **Xuanzhao Gao**, Sander Stuijk, Henk Corporaal, and Jin-Guo Liu. [Probabilistic Inference in the Era of Tensor Networks and Differential Programming](https://doi.org/10.1103/PhysRevResearch.6.033261.) Physical Review Research 6, no. 3 (September 6, 2024): 033261. 
 
-* Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Random Batch Ewald Method for Dielectrically Confined Coulomb Systems](http://arxiv.org/abs/2405.06333). arXiv, May 10, 2024.
+* **XuanzhaoGao**, and Zecheng Gan. [Broken Symmetries in Quasi-2D Charged Systems via Negative Dielectric Confinement](https://doi.org/10.1063/5.0214523). The Journal of Chemical Physics 161, no. 1 (July 7, 2024): 011102.
 
 # Talks
 
