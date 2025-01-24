@@ -26,6 +26,12 @@ My Google Scholar profile can be found [here](https://scholar.google.fr/citation
 
     This blog is a supplementary for the note [Tensor Network Contraction Order Optimization with Exact Tree Width Solver](/blogs/contractionorder/), where I detailed introduce the algorithm to find the optimal tree decomposition with minimal treewidth of a given simple graph, and how it is implemented in Julia package [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl).
 
+# Technical Notes
+
+* [How to install slurm on Ubuntu 22.04](/blogs/slurm/)
+
+  This blog is a technical note for the installation of slurm on Ubuntu 22.04 with NIS and apt tools.
+
 # Open Source Packages
 
 * [CuTropicalGEMM.jl](https://github.com/TensorBFS/CuTropicalGEMM.jl)
@@ -44,13 +50,13 @@ My Google Scholar profile can be found [here](https://scholar.google.fr/citation
 
 # Publications
 
+* Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Fast Algorithm for Quasi-2D Coulomb Systems](https://doi.org/10.1016/j.jcp.2025.113733). Journal of Computational Physics, Volume 524, 1 March 2025, 113733
+
 * **Xuanzhao Gao**, Yi-Jia Wang, Pan Zhang, and Jin-Guo Liu. [Automated Discovery of Branching Rules with Optimal Complexity for the Maximum Independent Set Problem](https://arxiv.org/abs/2412.07685). arXiv, December, 2024.
 
 * **Xuanzhao Gao**, Shidong Jiang, Jiuyang Liang, Zhenli Xu, and Qi Zhou. [A fast spectral sum-of-Gaussians method for electrostatic summation in quasi-2D systems](http://arxiv.org/abs/2412.04595). arXiv, December, 2024.
 
 * Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Random Batch Ewald Method for Dielectrically Confined Coulomb Systems](http://arxiv.org/abs/2405.06333). arXiv, May 10, 2024.
-
-* Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Fast Algorithm for Quasi-2D Coulomb Systems](http://arxiv.org/abs/2403.01521). arXiv, March 3, 2024.
 
 * Roa-Villescas Martin, **Xuanzhao Gao**, Sander Stuijk, Henk Corporaal, and Jin-Guo Liu. [Probabilistic Inference in the Era of Tensor Networks and Differential Programming](https://doi.org/10.1103/PhysRevResearch.6.033261.) Physical Review Research 6, no. 3 (September 6, 2024): 033261. 
 
