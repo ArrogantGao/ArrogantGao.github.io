@@ -41,11 +41,13 @@ For network, the master node is connected to the internet, and all nodes are con
 
 ### Install the tools
 
+Prepare the environment on all the nodes, make sure all is set up correctly before installing munge and slurm.
+
 #### MaridDB
 
 Just follow the [MaridDB tutorial](https://cn.linux-console.net/?p=12420).
 
-### NFS
+#### NFS
 
 <!-- Install the NFS on all nodes, use the master node as the server and the other nodes as the client.
 ```bash
@@ -82,7 +84,7 @@ I shared `/storage`, `/opt` and `/home` directory on all the nodes.
 
 You can also start the service automatically when the node is booted by make this as a systemd service (in my case, I make it sleep for 10 seconds after the node is booted to make sure the network is ready).
 
-### NIS
+#### NIS
 
 Install the NIS according to the [NIS tutorial](https://blog.csdn.net/davei1988/article/details/141639252).
 One can also use OpenLDAP to replace NIS, but I think NIS is easier to use.

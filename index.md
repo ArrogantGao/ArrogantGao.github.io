@@ -34,23 +34,19 @@ My Google Scholar profile can be found [here](https://scholar.google.fr/citation
 
 # Open Source Packages
 
-* [CuTropicalGEMM.jl](https://github.com/TensorBFS/CuTropicalGEMM.jl)
-  * A Julia package to speed up the generic matrix multiplication of Tropical Numbers using GPU.
-* [ExTinyMD.jl](https://github.com/HPMolSim/ExTinyMD.jl)
-  * A simple but fast molecular dynamic framework in Julia.
-* [ChebParticleMesh.jl](https://github.com/HPMolSim/ChebParticleMesh.jl)
-  * A Julia package to calculate the electrostatic potential of charged systems using Chebyshev interpolation (very similar to NUFFT).
-* [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl)
-  * A Julia package to solve tree decomposition with minimal treewidth of a given simple graph.
-* [EwaldSummations.jl](https://github.com/HPMolSim/EwaldSummations.jl)
-  * A Julia package to calculate the electrostatic potential of charged systems using Ewald summation.
-* [OptimalBranching.jl](https://github.com/ArrogantGao/OptimalBranching.jl)
-  * A Julia package to find the optimal branching rules for the maximum independent set problem.
+* [CuTropicalGEMM.jl](https://github.com/TensorBFS/CuTropicalGEMM.jl): A Julia package to speed up the generic matrix multiplication of Tropical Numbers using GPU.
+* [ExTinyMD.jl](https://github.com/HPMolSim/ExTinyMD.jl): A simple but fast molecular dynamic framework in Julia.
+* [ChebParticleMesh.jl](https://github.com/HPMolSim/ChebParticleMesh.jl): A Julia package to calculate the electrostatic potential of charged systems using Chebyshev interpolation (very similar to NUFFT).
+* [TreeWidthSolver.jl](https://github.com/ArrogantGao/TreeWidthSolver.jl): A Julia package to solve tree decomposition with minimal treewidth of a given simple graph.
+* [EwaldSummations.jl](https://github.com/HPMolSim/EwaldSummations.jl): A Julia package to calculate the electrostatic potential of charged systems using Ewald summation.
+* [OptimalBranching.jl](https://github.com/ArrogantGao/OptimalBranching.jl): A Julia package to find the optimal branching rules for the maximum independent set problem.
 
 
 # Publications
 
 * Zecheng Gan, **Xuanzhao Gao**, Jiuyang Liang, and Zhenli Xu. [Fast Algorithm for Quasi-2D Coulomb Systems](https://doi.org/10.1016/j.jcp.2025.113733). Journal of Computational Physics, Volume 524, 1 March 2025, 113733
+
+* **Xuanzhao Gao**, Xiaofeng Li, Jinguo Liu, and Zhenli Xu. [Programming guide for solving constraint satisfaction problems with tensor networks](https://arxiv.org/abs/2501.00227). arXiv, December, 2024.
 
 * **Xuanzhao Gao**, Yi-Jia Wang, Pan Zhang, and Jin-Guo Liu. [Automated Discovery of Branching Rules with Optimal Complexity for the Maximum Independent Set Problem](https://arxiv.org/abs/2412.07685). arXiv, December, 2024.
 
