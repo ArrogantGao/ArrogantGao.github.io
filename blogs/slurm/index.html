@@ -1,0 +1,58 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/libs/highlight/styles/github.min.css"> <link rel=stylesheet  href="/css/franklin.css"> <link rel=stylesheet  href="/css/jemdoc.css"> <link rel=icon  href="/assets/profile.png"> <title>Install slurm on Ubuntu 22.04</title> <main class=outside > <div class=box > <aside class=layout-menu > <div class=menu-category >Xuanzhao Gao's Site</div> <div class="menu-item "><a href="/">Home</a></div> <div class=menu-category >Blogs</div> <div class="menu-item "><a href="/blogs/CuTropicalGEMM/">GEMM on GPU</a></div> <div class="menu-item "><a href="/blogs/contractionorder">TN Contraction Order</a></div> <div class="menu-item "><a href="/blogs/treewidth">Tree Width</a></div> <div class=menu-category >Notes</div> <div class="menu-item "><a href="/blogs/slurm">Install slurm</a></div> </aside> <div class=layout-content > <div class=franklin-content ><h1 id=install_slurm_on_ubuntu_2204 ><a href="#install_slurm_on_ubuntu_2204" class=header-anchor >Install slurm on Ubuntu 22.04</a></h1> <p>This blog is a technical note for the installation of slurm on Ubuntu 22.04.</p> <h2 id=before_this_note ><a href="#before_this_note" class=header-anchor >Before this note</a></h2> <p>First, I would like to claim that there are already lots of good turtorials online. However, when I try to install slurm, I found most of these turtorials are not working very well due to the changes of the system and tools. The purpose of this note is to record my experience and provide a detailed guide for the installation of slurm 23.11.1 on Ubuntu 22.04. &#40;The reason I did not use ubuntu 24.04 is that I found the change is very huge between 22 and 24, harder to follow the tutorial.&#41;</p> <p>Here are some main tutorials I followed &#40;they are in Chinese&#41;:</p> <ul> <li><p>Slurm: <a href="https://scc.ustc.edu.cn/hmli/doc/linux/slurm-install/slurm-install.html">https://scc.ustc.edu.cn/hmli/doc/linux/slurm-install/slurm-install.html</a> &#40;very detailed but has some mistakes&#41;</p> <li><p>MaridDB: <a href="https://cn.linux-console.net/?p&#61;12420">https://cn.linux-console.net/?p&#61;12420</a></p> <li><p>NFS: <a href="https://cn.linux-console.net/?p&#61;14769">https://cn.linux-console.net/?p&#61;14769</a></p> <li><p>NIS: <a href="https://blog.csdn.net/davei1988/article/details/141639252">https://blog.csdn.net/davei1988/article/details/141639252</a></p> </ul> <p>Some other tools:</p> <ul> <li><p>Run command at system start: <a href="https://blog.csdn.net/qq_54529791/article/details/135826187">https://blog.csdn.net/qq_54529791/article/details/135826187</a></p> <li><p>Other turtorials &#40;recommand to read, but don&#39;t use them directly&#41;: <a href="https://github.com/mknoxnv/ubuntu-slurm">https://github.com/mknoxnv/ubuntu-slurm</a>, <a href="https://github.com/nateGeorge/slurm_gpu_ubuntu">https://github.com/nateGeorge/slurm<em>gpu</em>ubuntu</a>, <a href="https://github.com/SergioMEV/slurm-for-dummies">https://github.com/SergioMEV/slurm-for-dummies</a></p> </ul> <h2 id=the_process ><a href="#the_process" class=header-anchor >The process</a></h2> <ol> <li><p>Install the system &#40;ubuntu 22.04&#41;.</p> <li><p>Install the tools:</p> <ul> <li><p>MaridDB: slurm need to use maridDB to store the job information.</p> <li><p>NFS: network file system, to share the data between the nodes, this allow me to use the same <code>/storage</code>, <code>/opt</code> and <code>/home</code> directory on all the nodes.</p> <li><p>NIS: network information service, to manage the user and group information on all the nodes. With NIS, I can create a user on master node, and then use the same user on other nodes.</p> </ul> <li><p>Install munge: munge is used to secure the communication between the nodes.</p> <li><p>Install and set up slurm</p> </ol> <h3 id=install_the_system ><a href="#install_the_system" class=header-anchor >Install the system</a></h3> <p>It is easy to install the system, just follow the instruction on the <a href="https://ubuntu.com/tutorials/install-ubuntu-desktop">ubuntu website</a>. Also remember to install the <code>openssh-server</code> on all the nodes.</p> <p>If you have a GPU, you can also install the <code>nvidia-driver-*</code> on all the nodes &#40;I use <code>nvidia-driver-550</code>&#41;.</p> <p>For network, the master node is connected to the internet, and all nodes are connected to the master node &#40;it has two network cards&#41; with a switch to construct a same subnet.</p> <p><img src="/assets/slurm_figs/nodes.jpeg" alt="" /></p> <p><strong>All the following steps should be done by the root user.</strong></p> <h3 id=install_the_tools ><a href="#install_the_tools" class=header-anchor >Install the tools</a></h3> <h4 id=mariddb ><a href="#mariddb" class=header-anchor >MaridDB</a></h4> <p>Just follow the <a href="https://cn.linux-console.net/?p&#61;12420">MaridDB tutorial</a>.</p> <h3 id=nfs ><a href="#nfs" class=header-anchor >NFS</a></h3> <p>Follow this <a href="https://cn.linux-console.net/?p&#61;14769">guide</a> to install the NFS. Remember to change the subnet to your own subnet. I directly closed the <code>ufw</code> service on all the nodes &#40;not recommand&#41;. I shared <code>/storage</code>, <code>/opt</code> and <code>/home</code> directory on all the nodes.</p> <p>You can also start the service automatically when the node is booted by make this as a systemd service &#40;in my case, I make it sleep for 10 seconds after the node is booted to make sure the network is ready&#41;.</p> <h3 id=nis ><a href="#nis" class=header-anchor >NIS</a></h3> <p>Install the NIS according to the <a href="https://blog.csdn.net/davei1988/article/details/141639252">NIS tutorial</a>. One can also use OpenLDAP to replace NIS, but I think NIS is easier to use.</p> <p>Then run the following command on the master node to create a user.</p> <pre><code class="bash hljs">adduser slurm
+adduser munge</code></pre> <p>and update the NIS database.</p> <pre><code class="bash hljs"><span class=hljs-built_in >cd</span> /etc/yp
+make</code></pre> <p>remember each time you change the user, you need to update the NIS database.</p> <h3 id=install_munge ><a href="#install_munge" class=header-anchor >Install munge</a></h3> <p>Follows 4.4 of this <a href="https://scc.ustc.edu.cn/hmli/doc/linux/slurm-install/slurm-install.html">guide</a>, just remember that create the <code>munge</code> user and group before installing munge&#33;</p> <h3 id=install_slurm ><a href="#install_slurm" class=header-anchor >Install slurm</a></h3> <p>Follows chapter 3 and 4 of this <a href="https://scc.ustc.edu.cn/hmli/doc/linux/slurm-install/slurm-install.html">guide</a>, also you need to create the <code>slurm</code> user and group before doing so.</p> <p>A mistake in the tutorial is that in the <code>cgroup.conf</code> file should be modified as:</p> <pre><code class="julia hljs"><span class=hljs-comment ># CgroupAutomount=yes # this is not needed</span>
+CgroupMountpoint=/sys/fs/cgroup
+<span class=hljs-comment ># CgroupPlugin=</span>
+
+ConstrainCores=yes
+ConstrainDevices=yes
+ConstrainRAMSpace=yes
+
+<span class=hljs-comment ># MaxRAMPercent=98 </span>
+<span class=hljs-comment ># AllowedRAMSpace=96</span></code></pre> <p>others should be the same as the tutorial.</p> <h2 id=results ><a href="#results" class=header-anchor >Results</a></h2> <p>After the installation, you can enjoy the slurm if you successfully run the following commands.</p> <pre><code class="bash hljs"><span class=hljs-comment ># xzgao @ master in ~ [1:02:33]</span>
+$ sinfo
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+i96c256g*    up   infinite      3   idle node[1-3]
+
+<span class=hljs-comment ># xzgao @ master in ~ [1:02:49]</span>
+$ srun -N3 hostname
+node1
+node2
+node3</code></pre> <p>Here is an example of the slurm script, where I run a <code>julia</code> script on 1 node with 96 cores, 192 threads.</p> <pre><code class="bash hljs"><span class=hljs-comment ># xzgao @ master in ~/work/julia_test [1:07:31]</span>
+$ <span class=hljs-built_in >cat</span> blas.jl
+using BLASBenchmarksCPU, CSV, DataFrames
+
+libs = [:Gaius, :Octavian, :OpenBLAS]
+threaded = <span class=hljs-literal >true</span>
+benchmark_result = runbench(Float64; libs, threaded)
+
+<span class=hljs-built_in >df</span> = benchmark_result_df(benchmark_result)
+CSV.write(<span class=hljs-string >&quot;/home/xzgao/work/julia_test/blas_results.csv&quot;</span>, <span class=hljs-built_in >df</span>)
+
+<span class=hljs-comment ># xzgao @ master in ~/work/julia_test [1:05:11]</span>
+$ <span class=hljs-built_in >cat</span> run.slurm
+<span class=hljs-comment >#!/bin/bash</span>
+
+<span class=hljs-comment >#SBATCH --job-name=test</span>
+<span class=hljs-comment >#SBATCH --partition=i96c256g</span>
+<span class=hljs-comment >#SBATCH -n 96</span>
+<span class=hljs-comment >#SBATCH --ntasks-per-node=192</span>
+<span class=hljs-comment >#SBATCH --output=%j.out</span>
+<span class=hljs-comment >#SBATCH --error=%j.err</span>
+
+julia --project=/home/xzgao/work/julia_test -t 192 /home/xzgao/work/julia_test/blas.jl
+
+<span class=hljs-comment ># xzgao @ master in ~/work/julia_test [1:04:17]</span>
+$ sbatch run.slurm
+Submitted batch job 26
+
+<span class=hljs-comment ># xzgao @ master in ~/work/julia_test [1:04:31]</span>
+$ squeue
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+                26  i96c256g     <span class=hljs-built_in >test</span>    xzgao  R       0:01      1 node1
+
+<span class=hljs-comment ># xzgao @ master in ~/work/julia_test [1:04:32]</span>
+$ sinfo
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+i96c256g*    up   infinite      1  alloc node1
+i96c256g*    up   infinite      2   idle node[2-3]</code></pre> <p>Since I use NFS to share <code>/home</code> directory, the program can be run on any nodes once the user install software under the <code>/home</code> directory.</p> <div class=page-foot > <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> Xuanzhao Gao. Last modified: January 25, 2025. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>. </div> </div> </div> <script src="/libs/highlight/highlight.min.js"></script> <script>hljs.highlightAll();hljs.configure({tabReplace: ' '});</script> </div> </main>
