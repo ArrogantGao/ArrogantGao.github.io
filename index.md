@@ -12,6 +12,8 @@ I am a PhD student at Hongkong University of Science and Technology (Guangzhou).
 
 My Google Scholar profile can be found [here](https://scholar.google.fr/citations?user=ScbYSkgAAAAJ&hl=fr), and my github can be found [here](https://github.com/ArrogantGao).
 
+My PhD thesis is titled with "Confined Quasi-2D Coulomb Systems: Theory, Algorithms and Applications", and can be found [here](https://raw.githubusercontent.com/ArrogantGao/my_presentations/main/articles/thesis.pdf).
+
 # Blogs
 
 1. [How to implement generic matrix multiplication (GEMM) with generic element types on GPU?](/blogs/CuTropicalGEMM/)
