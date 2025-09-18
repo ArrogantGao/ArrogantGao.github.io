@@ -3,12 +3,12 @@
 
 # Greetings!
 
-I am Xuanzhao Gao, a PhD student in Hongkong University of Science and Technology.
+I am Xuanzhao Gao, a research fellow at the Flatiron Institute, Center for Computational Mathematics.
 This is my personal website, hope you enjoy!
 
 # About Me
 
-I am a PhD student at Hongkong University of Science and Technology (Guangzhou). My research interests include computational physics, application mathematics, and high-performance computing. I am currently working on the development of fast algorithms for kernel summation problems and tensor network contraction problems.
+I received my PhD degree from the Hong Kong University of Science and Technology. My research interests include computational physics, application mathematics, and high-performance computing. I am currently working on the development of fast algorithms for kernel summation problems and tensor network contraction problems.
 
 My Google Scholar profile can be found [here](https://scholar.google.fr/citations?user=ScbYSkgAAAAJ&hl=fr), and my github can be found [here](https://github.com/ArrogantGao).
 
